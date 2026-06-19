@@ -1,0 +1,1538 @@
+[
+  {
+    "name": "Sachin Tendulkar",
+    "country": "India",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm medium, leg break",
+    "formats": {
+      "Test": {
+        "matches": 200, "innings_bat": 329, "runs": 15921, "bat_avg": 53.78,
+        "hundreds": 51, "fifties": 68, "highest_score": "248*",
+        "innings_bowl": 123, "wickets": 46, "bowl_avg": 54.17,
+        "best_bowling": "3/10", "five_wickets": 0, "catches": 115, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 463, "innings_bat": 452, "runs": 18426, "bat_avg": 44.83,
+        "hundreds": 49, "fifties": 96, "highest_score": "200*",
+        "innings_bowl": 269, "wickets": 154, "bowl_avg": 44.48,
+        "best_bowling": "5/32", "five_wickets": 2, "catches": 140, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 1, "innings_bat": 1, "runs": 10, "bat_avg": 10.0,
+        "hundreds": 0, "fifties": 0, "highest_score": "10",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 0, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Brian Lara",
+    "country": "West Indies",
+    "role": "Batsman",
+    "bat_hand": "Left",
+    "bowl_style": "Right-arm leg break",
+    "formats": {
+      "Test": {
+        "matches": 131, "innings_bat": 232, "runs": 11953, "bat_avg": 52.88,
+        "hundreds": 34, "fifties": 48, "highest_score": "400*",
+        "innings_bowl": 8, "wickets": 4, "bowl_avg": 121.50,
+        "best_bowling": "2/5", "five_wickets": 0, "catches": 164, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 299, "innings_bat": 289, "runs": 10405, "bat_avg": 40.48,
+        "hundreds": 19, "fifties": 63, "highest_score": "169",
+        "innings_bowl": 23, "wickets": 4, "bowl_avg": 88.50,
+        "best_bowling": "2/18", "five_wickets": 0, "catches": 120, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Ricky Ponting",
+    "country": "Australia",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm medium",
+    "formats": {
+      "Test": {
+        "matches": 168, "innings_bat": 287, "runs": 13378, "bat_avg": 51.85,
+        "hundreds": 41, "fifties": 62, "highest_score": "257",
+        "innings_bowl": 29, "wickets": 5, "bowl_avg": 54.60,
+        "best_bowling": "1/0", "five_wickets": 0, "catches": 196, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 375, "innings_bat": 365, "runs": 13704, "bat_avg": 42.03,
+        "hundreds": 30, "fifties": 82, "highest_score": "164",
+        "innings_bowl": 30, "wickets": 3, "bowl_avg": 120.33,
+        "best_bowling": "1/14", "five_wickets": 0, "catches": 160, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 17, "innings_bat": 17, "runs": 401, "bat_avg": 28.64,
+        "hundreds": 0, "fifties": 2, "highest_score": "98*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 7, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Virat Kohli",
+    "country": "India",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm medium",
+    "formats": {
+      "Test": {
+        "matches": 113, "innings_bat": 193, "runs": 8848, "bat_avg": 49.15,
+        "hundreds": 29, "fifties": 30, "highest_score": "254*",
+        "innings_bowl": 4, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 100, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 292, "innings_bat": 280, "runs": 13906, "bat_avg": 58.18,
+        "hundreds": 50, "fifties": 72, "highest_score": "183",
+        "innings_bowl": 46, "wickets": 4, "bowl_avg": 166.25,
+        "best_bowling": "1/15", "five_wickets": 0, "catches": 132, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 125, "innings_bat": 118, "runs": 4188, "bat_avg": 48.69,
+        "hundreds": 1, "fifties": 38, "highest_score": "122*",
+        "innings_bowl": 5, "wickets": 4, "bowl_avg": 19.75,
+        "best_bowling": "1/13", "five_wickets": 0, "catches": 53, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Steve Smith",
+    "country": "Australia",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm leg break",
+    "formats": {
+      "Test": {
+        "matches": 109, "innings_bat": 196, "runs": 9685, "bat_avg": 56.93,
+        "hundreds": 32, "fifties": 37, "highest_score": "239",
+        "innings_bowl": 42, "wickets": 7, "bowl_avg": 72.28,
+        "best_bowling": "3/51", "five_wickets": 0, "catches": 141, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 131, "innings_bat": 124, "runs": 4378, "bat_avg": 42.89,
+        "hundreds": 11, "fifties": 26, "highest_score": "164",
+        "innings_bowl": 39, "wickets": 11, "bowl_avg": 55.45,
+        "best_bowling": "2/14", "five_wickets": 0, "catches": 52, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 58, "innings_bat": 53, "runs": 1165, "bat_avg": 26.93,
+        "hundreds": 0, "fifties": 6, "highest_score": "90",
+        "innings_bowl": 2, "wickets": 1, "bowl_avg": 24.00,
+        "best_bowling": "1/24", "five_wickets": 0, "catches": 22, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Kane Williamson",
+    "country": "New Zealand",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 99, "innings_bat": 176, "runs": 8147, "bat_avg": 54.31,
+        "hundreds": 26, "fifties": 34, "highest_score": "251",
+        "innings_bowl": 56, "wickets": 29, "bowl_avg": 40.48,
+        "best_bowling": "4/44", "five_wickets": 0, "catches": 81, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 161, "innings_bat": 156, "runs": 6173, "bat_avg": 47.48,
+        "hundreds": 13, "fifties": 39, "highest_score": "148",
+        "innings_bowl": 54, "wickets": 29, "bowl_avg": 37.34,
+        "best_bowling": "3/15", "five_wickets": 0, "catches": 68, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 79, "innings_bat": 72, "runs": 2140, "bat_avg": 33.43,
+        "hundreds": 0, "fifties": 14, "highest_score": "95",
+        "innings_bowl": 11, "wickets": 5, "bowl_avg": 32.20,
+        "best_bowling": "2/9", "five_wickets": 0, "catches": 28, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Joe Root",
+    "country": "England",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 148, "innings_bat": 270, "runs": 12777, "bat_avg": 50.89,
+        "hundreds": 35, "fifties": 63, "highest_score": "254",
+        "innings_bowl": 106, "wickets": 44, "bowl_avg": 45.57,
+        "best_bowling": "4/5", "five_wickets": 0, "catches": 170, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 160, "innings_bat": 152, "runs": 6207, "bat_avg": 49.66,
+        "hundreds": 16, "fifties": 36, "highest_score": "133*",
+        "innings_bowl": 47, "wickets": 18, "bowl_avg": 47.05,
+        "best_bowling": "2/9", "five_wickets": 0, "catches": 62, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 32, "innings_bat": 30, "runs": 893, "bat_avg": 35.72,
+        "hundreds": 0, "fifties": 5, "highest_score": "90*",
+        "innings_bowl": 4, "wickets": 2, "bowl_avg": 36.00,
+        "best_bowling": "2/9", "five_wickets": 0, "catches": 13, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Babar Azam",
+    "country": "Pakistan",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 55, "innings_bat": 97, "runs": 3898, "bat_avg": 44.86,
+        "hundreds": 9, "fifties": 26, "highest_score": "196",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 54, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 114, "innings_bat": 107, "runs": 5329, "bat_avg": 56.92,
+        "hundreds": 19, "fifties": 27, "highest_score": "158",
+        "innings_bowl": 2, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 34, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 113, "innings_bat": 107, "runs": 4145, "bat_avg": 41.04,
+        "hundreds": 3, "fifties": 32, "highest_score": "122",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 31, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "AB de Villiers",
+    "country": "South Africa",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm medium",
+    "formats": {
+      "Test": {
+        "matches": 114, "innings_bat": 191, "runs": 8765, "bat_avg": 50.66,
+        "hundreds": 22, "fifties": 46, "highest_score": "278*",
+        "innings_bowl": 11, "wickets": 2, "bowl_avg": 78.50,
+        "best_bowling": "1/10", "five_wickets": 0, "catches": 169, "stumpings": 5
+      },
+      "ODI": {
+        "matches": 228, "innings_bat": 218, "runs": 9577, "bat_avg": 53.50,
+        "hundreds": 25, "fifties": 53, "highest_score": "176",
+        "innings_bowl": 19, "wickets": 7, "bowl_avg": 56.14,
+        "best_bowling": "2/11", "five_wickets": 0, "catches": 100, "stumpings": 11
+      },
+      "T20I": {
+        "matches": 78, "innings_bat": 75, "runs": 1672, "bat_avg": 26.12,
+        "hundreds": 0, "fifties": 10, "highest_score": "79*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 32, "stumpings": 2
+      }
+    }
+  },
+  {
+    "name": "Kumar Sangakkara",
+    "country": "Sri Lanka",
+    "role": "Batsman",
+    "bat_hand": "Left",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 134, "innings_bat": 233, "runs": 12400, "bat_avg": 57.40,
+        "hundreds": 38, "fifties": 52, "highest_score": "319",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 182, "stumpings": 20
+      },
+      "ODI": {
+        "matches": 404, "innings_bat": 380, "runs": 14234, "bat_avg": 41.98,
+        "hundreds": 25, "fifties": 93, "highest_score": "169",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 199, "stumpings": 99
+      },
+      "T20I": {
+        "matches": 56, "innings_bat": 52, "runs": 1382, "bat_avg": 31.40,
+        "hundreds": 0, "fifties": 8, "highest_score": "78",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 21, "stumpings": 9
+      }
+    }
+  },
+  {
+    "name": "Mahela Jayawardene",
+    "country": "Sri Lanka",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 149, "innings_bat": 252, "runs": 11814, "bat_avg": 49.84,
+        "hundreds": 34, "fifties": 50, "highest_score": "374",
+        "innings_bowl": 41, "wickets": 9, "bowl_avg": 65.11,
+        "best_bowling": "1/0", "five_wickets": 0, "catches": 205, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 448, "innings_bat": 418, "runs": 12650, "bat_avg": 33.37,
+        "hundreds": 19, "fifties": 77, "highest_score": "144",
+        "innings_bowl": 84, "wickets": 18, "bowl_avg": 67.00,
+        "best_bowling": "3/20", "five_wickets": 0, "catches": 166, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 55, "innings_bat": 47, "runs": 1493, "bat_avg": 34.72,
+        "hundreds": 0, "fifties": 11, "highest_score": "100",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 18, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Rahul Dravid",
+    "country": "India",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 164, "innings_bat": 286, "runs": 13288, "bat_avg": 52.31,
+        "hundreds": 36, "fifties": 63, "highest_score": "270",
+        "innings_bowl": 7, "wickets": 1, "bowl_avg": 39.00,
+        "best_bowling": "1/18", "five_wickets": 0, "catches": 210, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 344, "innings_bat": 318, "runs": 10889, "bat_avg": 39.16,
+        "hundreds": 12, "fifties": 83, "highest_score": "153",
+        "innings_bowl": 14, "wickets": 4, "bowl_avg": 42.50,
+        "best_bowling": "2/43", "five_wickets": 0, "catches": 124, "stumpings": 14
+      },
+      "T20I": {
+        "matches": 1, "innings_bat": 1, "runs": 31, "bat_avg": 31.0,
+        "hundreds": 0, "fifties": 0, "highest_score": "31",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 0, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Matthew Hayden",
+    "country": "Australia",
+    "role": "Batsman",
+    "bat_hand": "Left",
+    "bowl_style": "Right-arm medium",
+    "formats": {
+      "Test": {
+        "matches": 103, "innings_bat": 184, "runs": 8625, "bat_avg": 50.73,
+        "hundreds": 30, "fifties": 29, "highest_score": "380",
+        "innings_bowl": 7, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 128, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 161, "innings_bat": 154, "runs": 6133, "bat_avg": 43.80,
+        "hundreds": 10, "fifties": 36, "highest_score": "181*",
+        "innings_bowl": 10, "wickets": 1, "bowl_avg": 116.00,
+        "best_bowling": "1/24", "five_wickets": 0, "catches": 62, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 9, "innings_bat": 9, "runs": 273, "bat_avg": 34.12,
+        "hundreds": 0, "fifties": 2, "highest_score": "73",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 3, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Virender Sehwag",
+    "country": "India",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 104, "innings_bat": 180, "runs": 8586, "bat_avg": 49.34,
+        "hundreds": 23, "fifties": 32, "highest_score": "319",
+        "innings_bowl": 74, "wickets": 40, "bowl_avg": 45.42,
+        "best_bowling": "3/30", "five_wickets": 0, "catches": 91, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 251, "innings_bat": 245, "runs": 8273, "bat_avg": 35.05,
+        "hundreds": 15, "fifties": 38, "highest_score": "219",
+        "innings_bowl": 107, "wickets": 96, "bowl_avg": 33.64,
+        "best_bowling": "5/45", "five_wickets": 1, "catches": 78, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 19, "innings_bat": 19, "runs": 394, "bat_avg": 21.88,
+        "hundreds": 0, "fifties": 2, "highest_score": "68",
+        "innings_bowl": 7, "wickets": 5, "bowl_avg": 38.20,
+        "best_bowling": "2/14", "five_wickets": 0, "catches": 7, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Younis Khan",
+    "country": "Pakistan",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm leg break",
+    "formats": {
+      "Test": {
+        "matches": 118, "innings_bat": 213, "runs": 10099, "bat_avg": 52.05,
+        "hundreds": 34, "fifties": 33, "highest_score": "313",
+        "innings_bowl": 13, "wickets": 3, "bowl_avg": 118.33,
+        "best_bowling": "2/40", "five_wickets": 0, "catches": 139, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 265, "innings_bat": 247, "runs": 7249, "bat_avg": 31.24,
+        "hundreds": 7, "fifties": 48, "highest_score": "144*",
+        "innings_bowl": 12, "wickets": 7, "bowl_avg": 47.42,
+        "best_bowling": "2/31", "five_wickets": 0, "catches": 90, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Inzamam-ul-Haq",
+    "country": "Pakistan",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm leg break",
+    "formats": {
+      "Test": {
+        "matches": 120, "innings_bat": 200, "runs": 8830, "bat_avg": 49.60,
+        "hundreds": 25, "fifties": 46, "highest_score": "329",
+        "innings_bowl": 13, "wickets": 3, "bowl_avg": 45.33,
+        "best_bowling": "1/7", "five_wickets": 0, "catches": 90, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 378, "innings_bat": 350, "runs": 11739, "bat_avg": 39.52,
+        "hundreds": 10, "fifties": 83, "highest_score": "137*",
+        "innings_bowl": 32, "wickets": 10, "bowl_avg": 64.10,
+        "best_bowling": "3/20", "five_wickets": 0, "catches": 108, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Hashim Amla",
+    "country": "South Africa",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 124, "innings_bat": 215, "runs": 9282, "bat_avg": 46.64,
+        "hundreds": 28, "fifties": 41, "highest_score": "311*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 94, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 181, "innings_bat": 178, "runs": 8113, "bat_avg": 49.46,
+        "hundreds": 27, "fifties": 39, "highest_score": "159",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 63, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 44, "innings_bat": 44, "runs": 1277, "bat_avg": 33.60,
+        "hundreds": 0, "fifties": 9, "highest_score": "97*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 10, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "VVS Laxman",
+    "country": "India",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 134, "innings_bat": 225, "runs": 8781, "bat_avg": 45.97,
+        "hundreds": 17, "fifties": 56, "highest_score": "281",
+        "innings_bowl": 8, "wickets": 2, "bowl_avg": 75.50,
+        "best_bowling": "1/7", "five_wickets": 0, "catches": 135, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 86, "innings_bat": 81, "runs": 2338, "bat_avg": 30.76,
+        "hundreds": 6, "fifties": 10, "highest_score": "131",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 27, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Shivnarine Chanderpaul",
+    "country": "West Indies",
+    "role": "Batsman",
+    "bat_hand": "Left",
+    "bowl_style": "Right-arm leg break",
+    "formats": {
+      "Test": {
+        "matches": 164, "innings_bat": 280, "runs": 11867, "bat_avg": 51.37,
+        "hundreds": 30, "fifties": 66, "highest_score": "203*",
+        "innings_bowl": 75, "wickets": 10, "bowl_avg": 69.00,
+        "best_bowling": "2/10", "five_wickets": 0, "catches": 75, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 268, "innings_bat": 251, "runs": 8778, "bat_avg": 41.60,
+        "hundreds": 11, "fifties": 59, "highest_score": "150",
+        "innings_bowl": 57, "wickets": 15, "bowl_avg": 49.33,
+        "best_bowling": "2/13", "five_wickets": 0, "catches": 66, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Michael Clarke",
+    "country": "Australia",
+    "role": "Batsman",
+    "bat_hand": "Right",
+    "bowl_style": "Left-arm orthodox",
+    "formats": {
+      "Test": {
+        "matches": 115, "innings_bat": 198, "runs": 8643, "bat_avg": 49.10,
+        "hundreds": 28, "fifties": 27, "highest_score": "329*",
+        "innings_bowl": 58, "wickets": 6, "bowl_avg": 76.66,
+        "best_bowling": "2/4", "five_wickets": 0, "catches": 134, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 245, "innings_bat": 218, "runs": 7981, "bat_avg": 44.58,
+        "hundreds": 8, "fifties": 58, "highest_score": "130",
+        "innings_bowl": 80, "wickets": 57, "bowl_avg": 37.89,
+        "best_bowling": "3/15", "five_wickets": 0, "catches": 98, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 34, "innings_bat": 28, "runs": 488, "bat_avg": 20.33,
+        "hundreds": 0, "fifties": 2, "highest_score": "47",
+        "innings_bowl": 10, "wickets": 6, "bowl_avg": 38.00,
+        "best_bowling": "2/13", "five_wickets": 0, "catches": 16, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Shane Warne",
+    "country": "Australia",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm leg break",
+    "formats": {
+      "Test": {
+        "matches": 145, "innings_bat": 199, "runs": 3154, "bat_avg": 17.32,
+        "hundreds": 0, "fifties": 12, "highest_score": "99",
+        "innings_bowl": 273, "wickets": 708, "bowl_avg": 25.41,
+        "best_bowling": "8/71", "five_wickets": 37, "catches": 125, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 194, "innings_bat": 107, "runs": 1018, "bat_avg": 13.05,
+        "hundreds": 0, "fifties": 1, "highest_score": "55",
+        "innings_bowl": 191, "wickets": 293, "bowl_avg": 25.73,
+        "best_bowling": "5/33", "five_wickets": 1, "catches": 80, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Muttiah Muralitharan",
+    "country": "Sri Lanka",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 133, "innings_bat": 164, "runs": 1261, "bat_avg": 11.67,
+        "hundreds": 0, "fifties": 1, "highest_score": "67",
+        "innings_bowl": 230, "wickets": 800, "bowl_avg": 22.72,
+        "best_bowling": "9/51", "five_wickets": 67, "catches": 72, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 350, "innings_bat": 128, "runs": 674, "bat_avg": 6.93,
+        "hundreds": 0, "fifties": 0, "highest_score": "33*",
+        "innings_bowl": 340, "wickets": 534, "bowl_avg": 23.08,
+        "best_bowling": "7/30", "five_wickets": 10, "catches": 73, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 12, "innings_bat": 3, "runs": 2, "bat_avg": 1.0,
+        "hundreds": 0, "fifties": 0, "highest_score": "1",
+        "innings_bowl": 12, "wickets": 13, "bowl_avg": 11.15,
+        "best_bowling": "4/11", "five_wickets": 0, "catches": 1, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Glenn McGrath",
+    "country": "Australia",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 124, "innings_bat": 138, "runs": 641, "bat_avg": 7.36,
+        "hundreds": 0, "fifties": 0, "highest_score": "61",
+        "innings_bowl": 243, "wickets": 563, "bowl_avg": 21.64,
+        "best_bowling": "8/24", "five_wickets": 29, "catches": 38, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 250, "innings_bat": 59, "runs": 115, "bat_avg": 3.83,
+        "hundreds": 0, "fifties": 0, "highest_score": "11",
+        "innings_bowl": 248, "wickets": 381, "bowl_avg": 22.02,
+        "best_bowling": "7/15", "five_wickets": 7, "catches": 37, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Wasim Akram",
+    "country": "Pakistan",
+    "role": "Bowler",
+    "bat_hand": "Left",
+    "bowl_style": "Left-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 104, "innings_bat": 147, "runs": 2898, "bat_avg": 22.64,
+        "hundreds": 3, "fifties": 7, "highest_score": "257*",
+        "innings_bowl": 181, "wickets": 414, "bowl_avg": 23.62,
+        "best_bowling": "7/119", "five_wickets": 25, "catches": 44, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 356, "innings_bat": 280, "runs": 3717, "bat_avg": 16.52,
+        "hundreds": 0, "fifties": 6, "highest_score": "86",
+        "innings_bowl": 351, "wickets": 502, "bowl_avg": 23.52,
+        "best_bowling": "5/15", "five_wickets": 6, "catches": 88, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Waqar Younis",
+    "country": "Pakistan",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 87, "innings_bat": 120, "runs": 1010, "bat_avg": 10.20,
+        "hundreds": 0, "fifties": 0, "highest_score": "45",
+        "innings_bowl": 154, "wickets": 373, "bowl_avg": 23.56,
+        "best_bowling": "7/76", "five_wickets": 22, "catches": 18, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 262, "innings_bat": 120, "runs": 969, "bat_avg": 11.29,
+        "hundreds": 0, "fifties": 0, "highest_score": "37",
+        "innings_bowl": 258, "wickets": 416, "bowl_avg": 23.84,
+        "best_bowling": "7/36", "five_wickets": 13, "catches": 30, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Curtly Ambrose",
+    "country": "West Indies",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 98, "innings_bat": 122, "runs": 1439, "bat_avg": 12.40,
+        "hundreds": 0, "fifties": 0, "highest_score": "53",
+        "innings_bowl": 179, "wickets": 405, "bowl_avg": 20.99,
+        "best_bowling": "7/25", "five_wickets": 22, "catches": 22, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 176, "innings_bat": 64, "runs": 639, "bat_avg": 10.65,
+        "hundreds": 0, "fifties": 0, "highest_score": "31",
+        "innings_bowl": 176, "wickets": 225, "bowl_avg": 24.12,
+        "best_bowling": "5/17", "five_wickets": 2, "catches": 26, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Courtney Walsh",
+    "country": "West Indies",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 132, "innings_bat": 185, "runs": 936, "bat_avg": 7.54,
+        "hundreds": 0, "fifties": 0, "highest_score": "30*",
+        "innings_bowl": 242, "wickets": 519, "bowl_avg": 24.44,
+        "best_bowling": "7/37", "five_wickets": 22, "catches": 29, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 205, "innings_bat": 67, "runs": 321, "bat_avg": 6.42,
+        "hundreds": 0, "fifties": 0, "highest_score": "30",
+        "innings_bowl": 205, "wickets": 227, "bowl_avg": 30.47,
+        "best_bowling": "5/1", "five_wickets": 1, "catches": 24, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Allan Donald",
+    "country": "South Africa",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 72, "innings_bat": 102, "runs": 652, "bat_avg": 10.67,
+        "hundreds": 0, "fifties": 0, "highest_score": "37",
+        "innings_bowl": 135, "wickets": 330, "bowl_avg": 22.25,
+        "best_bowling": "8/71", "five_wickets": 20, "catches": 16, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 164, "innings_bat": 52, "runs": 218, "bat_avg": 7.26,
+        "hundreds": 0, "fifties": 0, "highest_score": "19",
+        "innings_bowl": 164, "wickets": 272, "bowl_avg": 21.78,
+        "best_bowling": "6/23", "five_wickets": 2, "catches": 25, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Dale Steyn",
+    "country": "South Africa",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 93, "innings_bat": 130, "runs": 1594, "bat_avg": 14.07,
+        "hundreds": 0, "fifties": 2, "highest_score": "76",
+        "innings_bowl": 175, "wickets": 439, "bowl_avg": 22.95,
+        "best_bowling": "7/51", "five_wickets": 26, "catches": 26, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 125, "innings_bat": 52, "runs": 323, "bat_avg": 9.78,
+        "hundreds": 0, "fifties": 0, "highest_score": "35*",
+        "innings_bowl": 123, "wickets": 196, "bowl_avg": 25.95,
+        "best_bowling": "6/39", "five_wickets": 5, "catches": 22, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 47, "innings_bat": 10, "runs": 32, "bat_avg": 5.33,
+        "hundreds": 0, "fifties": 0, "highest_score": "11*",
+        "innings_bowl": 47, "wickets": 64, "bowl_avg": 18.95,
+        "best_bowling": "4/9", "five_wickets": 0, "catches": 5, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "James Anderson",
+    "country": "England",
+    "role": "Bowler",
+    "bat_hand": "Left",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 187, "innings_bat": 237, "runs": 1838, "bat_avg": 8.04,
+        "hundreds": 0, "fifties": 1, "highest_score": "81",
+        "innings_bowl": 357, "wickets": 700, "bowl_avg": 26.45,
+        "best_bowling": "7/42", "five_wickets": 32, "catches": 37, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 194, "innings_bat": 56, "runs": 273, "bat_avg": 6.38,
+        "hundreds": 0, "fifties": 0, "highest_score": "28",
+        "innings_bowl": 191, "wickets": 269, "bowl_avg": 29.22,
+        "best_bowling": "5/23", "five_wickets": 2, "catches": 28, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 19, "innings_bat": 4, "runs": 1, "bat_avg": 1.0,
+        "hundreds": 0, "fifties": 0, "highest_score": "1*",
+        "innings_bowl": 19, "wickets": 18, "bowl_avg": 30.44,
+        "best_bowling": "3/23", "five_wickets": 0, "catches": 3, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Stuart Broad",
+    "country": "England",
+    "role": "Bowler",
+    "bat_hand": "Left",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 167, "innings_bat": 247, "runs": 3662, "bat_avg": 18.30,
+        "hundreds": 1, "fifties": 13, "highest_score": "169",
+        "innings_bowl": 310, "wickets": 602, "bowl_avg": 27.67,
+        "best_bowling": "8/15", "five_wickets": 19, "catches": 55, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 121, "innings_bat": 74, "runs": 510, "bat_avg": 9.44,
+        "hundreds": 0, "fifties": 0, "highest_score": "45*",
+        "innings_bowl": 120, "wickets": 178, "bowl_avg": 30.18,
+        "best_bowling": "5/23", "five_wickets": 1, "catches": 30, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 56, "innings_bat": 19, "runs": 118, "bat_avg": 11.80,
+        "hundreds": 0, "fifties": 0, "highest_score": "18",
+        "innings_bowl": 55, "wickets": 65, "bowl_avg": 23.21,
+        "best_bowling": "4/24", "five_wickets": 0, "catches": 15, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Jasprit Bumrah",
+    "country": "India",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 40, "innings_bat": 44, "runs": 374, "bat_avg": 12.46,
+        "hundreds": 0, "fifties": 0, "highest_score": "35*",
+        "innings_bowl": 73, "wickets": 181, "bowl_avg": 20.57,
+        "best_bowling": "6/45", "five_wickets": 11, "catches": 8, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 82, "innings_bat": 21, "runs": 54, "bat_avg": 5.40,
+        "hundreds": 0, "fifties": 0, "highest_score": "16*",
+        "innings_bowl": 80, "wickets": 149, "bowl_avg": 23.69,
+        "best_bowling": "6/19", "five_wickets": 2, "catches": 13, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 68, "innings_bat": 7, "runs": 5, "bat_avg": 2.50,
+        "hundreds": 0, "fifties": 0, "highest_score": "2*",
+        "innings_bowl": 68, "wickets": 89, "bowl_avg": 17.74,
+        "best_bowling": "3/7", "five_wickets": 0, "catches": 10, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Pat Cummins",
+    "country": "Australia",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 62, "innings_bat": 82, "runs": 1698, "bat_avg": 17.50,
+        "hundreds": 0, "fifties": 4, "highest_score": "93",
+        "innings_bowl": 116, "wickets": 262, "bowl_avg": 21.98,
+        "best_bowling": "6/23", "five_wickets": 8, "catches": 22, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 78, "innings_bat": 41, "runs": 467, "bat_avg": 14.59,
+        "hundreds": 0, "fifties": 0, "highest_score": "36",
+        "innings_bowl": 77, "wickets": 132, "bowl_avg": 27.21,
+        "best_bowling": "4/35", "five_wickets": 0, "catches": 18, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 48, "innings_bat": 13, "runs": 106, "bat_avg": 8.15,
+        "hundreds": 0, "fifties": 0, "highest_score": "26*",
+        "innings_bowl": 46, "wickets": 51, "bowl_avg": 24.54,
+        "best_bowling": "3/16", "five_wickets": 0, "catches": 14, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Mitchell Starc",
+    "country": "Australia",
+    "role": "Bowler",
+    "bat_hand": "Left",
+    "bowl_style": "Left-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 83, "innings_bat": 111, "runs": 1752, "bat_avg": 16.69,
+        "hundreds": 0, "fifties": 4, "highest_score": "84",
+        "innings_bowl": 157, "wickets": 327, "bowl_avg": 27.09,
+        "best_bowling": "6/50", "five_wickets": 14, "catches": 19, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 113, "innings_bat": 47, "runs": 477, "bat_avg": 12.23,
+        "hundreds": 0, "fifties": 1, "highest_score": "52*",
+        "innings_bowl": 112, "wickets": 215, "bowl_avg": 22.44,
+        "best_bowling": "6/28", "five_wickets": 5, "catches": 20, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 52, "innings_bat": 11, "runs": 38, "bat_avg": 6.33,
+        "hundreds": 0, "fifties": 0, "highest_score": "13*",
+        "innings_bowl": 52, "wickets": 64, "bowl_avg": 20.90,
+        "best_bowling": "4/8", "five_wickets": 0, "catches": 10, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Kagiso Rabada",
+    "country": "South Africa",
+    "role": "Bowler",
+    "bat_hand": "Left",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 63, "innings_bat": 82, "runs": 891, "bat_avg": 13.70,
+        "hundreds": 0, "fifties": 1, "highest_score": "52",
+        "innings_bowl": 117, "wickets": 290, "bowl_avg": 21.74,
+        "best_bowling": "7/112", "five_wickets": 13, "catches": 17, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 88, "innings_bat": 38, "runs": 268, "bat_avg": 9.57,
+        "hundreds": 0, "fifties": 0, "highest_score": "31",
+        "innings_bowl": 86, "wickets": 148, "bowl_avg": 27.13,
+        "best_bowling": "6/16", "five_wickets": 2, "catches": 14, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 42, "innings_bat": 10, "runs": 30, "bat_avg": 5.00,
+        "hundreds": 0, "fifties": 0, "highest_score": "11",
+        "innings_bowl": 42, "wickets": 41, "bowl_avg": 29.87,
+        "best_bowling": "3/20", "five_wickets": 0, "catches": 9, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Tim Southee",
+    "country": "New Zealand",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 104, "innings_bat": 148, "runs": 2390, "bat_avg": 20.60,
+        "hundreds": 1, "fifties": 6, "highest_score": "77*",
+        "innings_bowl": 193, "wickets": 381, "bowl_avg": 28.88,
+        "best_bowling": "7/64", "five_wickets": 13, "catches": 34, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 152, "innings_bat": 78, "runs": 765, "bat_avg": 14.71,
+        "hundreds": 0, "fifties": 1, "highest_score": "55",
+        "innings_bowl": 149, "wickets": 210, "bowl_avg": 33.64,
+        "best_bowling": "7/33", "five_wickets": 2, "catches": 37, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 116, "innings_bat": 27, "runs": 182, "bat_avg": 9.10,
+        "hundreds": 0, "fifties": 0, "highest_score": "23",
+        "innings_bowl": 116, "wickets": 133, "bowl_avg": 24.11,
+        "best_bowling": "3/16", "five_wickets": 0, "catches": 22, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Trent Boult",
+    "country": "New Zealand",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Left-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 87, "innings_bat": 115, "runs": 868, "bat_avg": 9.97,
+        "hundreds": 0, "fifties": 0, "highest_score": "44*",
+        "innings_bowl": 163, "wickets": 317, "bowl_avg": 27.48,
+        "best_bowling": "6/32", "five_wickets": 12, "catches": 22, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 106, "innings_bat": 41, "runs": 163, "bat_avg": 6.03,
+        "hundreds": 0, "fifties": 0, "highest_score": "21*",
+        "innings_bowl": 104, "wickets": 185, "bowl_avg": 24.62,
+        "best_bowling": "7/34", "five_wickets": 4, "catches": 17, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 56, "innings_bat": 7, "runs": 13, "bat_avg": 3.25,
+        "hundreds": 0, "fifties": 0, "highest_score": "6*",
+        "innings_bowl": 56, "wickets": 62, "bowl_avg": 23.80,
+        "best_bowling": "4/13", "five_wickets": 0, "catches": 11, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Lasith Malinga",
+    "country": "Sri Lanka",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 30, "innings_bat": 44, "runs": 266, "bat_avg": 7.82,
+        "hundreds": 0, "fifties": 0, "highest_score": "30",
+        "innings_bowl": 59, "wickets": 101, "bowl_avg": 33.53,
+        "best_bowling": "5/68", "five_wickets": 2, "catches": 8, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 226, "innings_bat": 86, "runs": 337, "bat_avg": 5.70,
+        "hundreds": 0, "fifties": 0, "highest_score": "21",
+        "innings_bowl": 222, "wickets": 338, "bowl_avg": 28.88,
+        "best_bowling": "6/38", "five_wickets": 8, "catches": 30, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 84, "innings_bat": 15, "runs": 19, "bat_avg": 2.71,
+        "hundreds": 0, "fifties": 0, "highest_score": "6",
+        "innings_bowl": 84, "wickets": 107, "bowl_avg": 20.79,
+        "best_bowling": "5/6", "five_wickets": 1, "catches": 9, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Anil Kumble",
+    "country": "India",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm leg break",
+    "formats": {
+      "Test": {
+        "matches": 132, "innings_bat": 170, "runs": 2506, "bat_avg": 17.77,
+        "hundreds": 1, "fifties": 5, "highest_score": "110*",
+        "innings_bowl": 236, "wickets": 619, "bowl_avg": 29.65,
+        "best_bowling": "10/74", "five_wickets": 35, "catches": 60, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 271, "innings_bat": 104, "runs": 938, "bat_avg": 10.20,
+        "hundreds": 0, "fifties": 0, "highest_score": "26",
+        "innings_bowl": 263, "wickets": 337, "bowl_avg": 30.89,
+        "best_bowling": "6/12", "five_wickets": 2, "catches": 50, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Harbhajan Singh",
+    "country": "India",
+    "role": "Bowler",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 103, "innings_bat": 145, "runs": 2224, "bat_avg": 18.33,
+        "hundreds": 2, "fifties": 9, "highest_score": "115",
+        "innings_bowl": 190, "wickets": 417, "bowl_avg": 32.46,
+        "best_bowling": "8/84", "five_wickets": 25, "catches": 35, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 236, "innings_bat": 108, "runs": 1237, "bat_avg": 13.61,
+        "hundreds": 0, "fifties": 2, "highest_score": "60",
+        "innings_bowl": 227, "wickets": 269, "bowl_avg": 33.76,
+        "best_bowling": "5/31", "five_wickets": 2, "catches": 42, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 28, "innings_bat": 9, "runs": 108, "bat_avg": 18.00,
+        "hundreds": 0, "fifties": 0, "highest_score": "24",
+        "innings_bowl": 28, "wickets": 25, "bowl_avg": 24.48,
+        "best_bowling": "4/12", "five_wickets": 0, "catches": 6, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Ben Stokes",
+    "country": "England",
+    "role": "All-rounder",
+    "bat_hand": "Left",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 105, "innings_bat": 183, "runs": 6270, "bat_avg": 35.39,
+        "hundreds": 13, "fifties": 28, "highest_score": "258",
+        "innings_bowl": 148, "wickets": 197, "bowl_avg": 31.38,
+        "best_bowling": "6/22", "five_wickets": 5, "catches": 113, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 105, "innings_bat": 96, "runs": 2919, "bat_avg": 39.44,
+        "hundreds": 3, "fifties": 21, "highest_score": "182*",
+        "innings_bowl": 84, "wickets": 74, "bowl_avg": 42.39,
+        "best_bowling": "5/61", "five_wickets": 1, "catches": 39, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 43, "innings_bat": 33, "runs": 464, "bat_avg": 19.33,
+        "hundreds": 0, "fifties": 2, "highest_score": "47*",
+        "innings_bowl": 31, "wickets": 26, "bowl_avg": 32.96,
+        "best_bowling": "3/26", "five_wickets": 0, "catches": 16, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Andrew Flintoff",
+    "country": "England",
+    "role": "All-rounder",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast",
+    "formats": {
+      "Test": {
+        "matches": 79, "innings_bat": 130, "runs": 3845, "bat_avg": 31.77,
+        "hundreds": 5, "fifties": 26, "highest_score": "167",
+        "innings_bowl": 131, "wickets": 226, "bowl_avg": 32.78,
+        "best_bowling": "5/58", "five_wickets": 3, "catches": 52, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 141, "innings_bat": 122, "runs": 3394, "bat_avg": 32.01,
+        "hundreds": 3, "fifties": 18, "highest_score": "123",
+        "innings_bowl": 127, "wickets": 168, "bowl_avg": 24.38,
+        "best_bowling": "5/19", "five_wickets": 1, "catches": 39, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 7, "innings_bat": 5, "runs": 79, "bat_avg": 15.80,
+        "hundreds": 0, "fifties": 0, "highest_score": "31",
+        "innings_bowl": 7, "wickets": 4, "bowl_avg": 43.00,
+        "best_bowling": "2/25", "five_wickets": 0, "catches": 3, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Jacques Kallis",
+    "country": "South Africa",
+    "role": "All-rounder",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 166, "innings_bat": 280, "runs": 13289, "bat_avg": 55.37,
+        "hundreds": 45, "fifties": 58, "highest_score": "224",
+        "innings_bowl": 237, "wickets": 292, "bowl_avg": 32.65,
+        "best_bowling": "6/54", "five_wickets": 5, "catches": 200, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 328, "innings_bat": 314, "runs": 11579, "bat_avg": 44.36,
+        "hundreds": 17, "fifties": 86, "highest_score": "139",
+        "innings_bowl": 272, "wickets": 273, "bowl_avg": 31.79,
+        "best_bowling": "5/30", "five_wickets": 2, "catches": 131, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 25, "innings_bat": 23, "runs": 666, "bat_avg": 33.30,
+        "hundreds": 0, "fifties": 6, "highest_score": "73",
+        "innings_bowl": 15, "wickets": 12, "bowl_avg": 24.33,
+        "best_bowling": "3/13", "five_wickets": 0, "catches": 11, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Ravindra Jadeja",
+    "country": "India",
+    "role": "All-rounder",
+    "bat_hand": "Left",
+    "bowl_style": "Left-arm orthodox",
+    "formats": {
+      "Test": {
+        "matches": 75, "innings_bat": 108, "runs": 3234, "bat_avg": 36.32,
+        "hundreds": 3, "fifties": 23, "highest_score": "175*",
+        "innings_bowl": 134, "wickets": 301, "bowl_avg": 24.10,
+        "best_bowling": "7/42", "five_wickets": 12, "catches": 53, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 176, "innings_bat": 117, "runs": 2447, "bat_avg": 32.62,
+        "hundreds": 0, "fifties": 14, "highest_score": "87",
+        "innings_bowl": 160, "wickets": 192, "bowl_avg": 36.41,
+        "best_bowling": "5/36", "five_wickets": 1, "catches": 56, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 74, "innings_bat": 36, "runs": 457, "bat_avg": 22.85,
+        "hundreds": 0, "fifties": 0, "highest_score": "46",
+        "innings_bowl": 68, "wickets": 51, "bowl_avg": 29.78,
+        "best_bowling": "3/15", "five_wickets": 0, "catches": 20, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Shakib Al Hasan",
+    "country": "Bangladesh",
+    "role": "All-rounder",
+    "bat_hand": "Left",
+    "bowl_style": "Left-arm orthodox",
+    "formats": {
+      "Test": {
+        "matches": 68, "innings_bat": 121, "runs": 4539, "bat_avg": 39.12,
+        "hundreds": 7, "fifties": 28, "highest_score": "217",
+        "innings_bowl": 122, "wickets": 237, "bowl_avg": 31.12,
+        "best_bowling": "7/36", "five_wickets": 18, "catches": 32, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 247, "innings_bat": 234, "runs": 7510, "bat_avg": 36.30,
+        "hundreds": 9, "fifties": 56, "highest_score": "134*",
+        "innings_bowl": 233, "wickets": 300, "bowl_avg": 31.17,
+        "best_bowling": "5/29", "five_wickets": 4, "catches": 66, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 118, "innings_bat": 106, "runs": 2341, "bat_avg": 23.17,
+        "hundreds": 0, "fifties": 12, "highest_score": "82",
+        "innings_bowl": 110, "wickets": 138, "bowl_avg": 17.48,
+        "best_bowling": "5/20", "five_wickets": 3, "catches": 31, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Jason Holder",
+    "country": "West Indies",
+    "role": "All-rounder",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 58, "innings_bat": 98, "runs": 2600, "bat_avg": 30.23,
+        "hundreds": 4, "fifties": 12, "highest_score": "202*",
+        "innings_bowl": 102, "wickets": 152, "bowl_avg": 27.29,
+        "best_bowling": "6/42", "five_wickets": 5, "catches": 50, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 128, "innings_bat": 107, "runs": 2164, "bat_avg": 26.70,
+        "hundreds": 0, "fifties": 12, "highest_score": "99*",
+        "innings_bowl": 120, "wickets": 149, "bowl_avg": 35.97,
+        "best_bowling": "5/27", "five_wickets": 1, "catches": 37, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 46, "innings_bat": 28, "runs": 193, "bat_avg": 10.72,
+        "hundreds": 0, "fifties": 0, "highest_score": "28*",
+        "innings_bowl": 44, "wickets": 36, "bowl_avg": 30.36,
+        "best_bowling": "4/7", "five_wickets": 0, "catches": 11, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Ravichandran Ashwin",
+    "country": "India",
+    "role": "All-rounder",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 106, "innings_bat": 151, "runs": 3503, "bat_avg": 26.54,
+        "hundreds": 5, "fifties": 14, "highest_score": "124",
+        "innings_bowl": 196, "wickets": 537, "bowl_avg": 24.00,
+        "best_bowling": "7/59", "five_wickets": 36, "catches": 65, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 113, "innings_bat": 65, "runs": 707, "bat_avg": 14.73,
+        "hundreds": 0, "fifties": 1, "highest_score": "65",
+        "innings_bowl": 111, "wickets": 156, "bowl_avg": 33.20,
+        "best_bowling": "4/25", "five_wickets": 0, "catches": 26, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 65, "innings_bat": 17, "runs": 123, "bat_avg": 10.25,
+        "hundreds": 0, "fifties": 0, "highest_score": "31*",
+        "innings_bowl": 62, "wickets": 72, "bowl_avg": 23.22,
+        "best_bowling": "4/8", "five_wickets": 0, "catches": 14, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Nathan Lyon",
+    "country": "Australia",
+    "role": "All-rounder",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm off break",
+    "formats": {
+      "Test": {
+        "matches": 130, "innings_bat": 174, "runs": 2096, "bat_avg": 13.46,
+        "hundreds": 0, "fifties": 2, "highest_score": "55*",
+        "innings_bowl": 246, "wickets": 530, "bowl_avg": 31.54,
+        "best_bowling": "8/50", "five_wickets": 21, "catches": 47, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 29, "innings_bat": 7, "runs": 26, "bat_avg": 5.20,
+        "hundreds": 0, "fifties": 0, "highest_score": "14*",
+        "innings_bowl": 29, "wickets": 30, "bowl_avg": 42.63,
+        "best_bowling": "3/14", "five_wickets": 0, "catches": 8, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 2, "innings_bat": 1, "runs": 0, "bat_avg": 0,
+        "hundreds": 0, "fifties": 0, "highest_score": "0",
+        "innings_bowl": 2, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 1, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Kapil Dev",
+    "country": "India",
+    "role": "All-rounder",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 131, "innings_bat": 184, "runs": 5248, "bat_avg": 31.05,
+        "hundreds": 8, "fifties": 27, "highest_score": "163",
+        "innings_bowl": 227, "wickets": 434, "bowl_avg": 29.64,
+        "best_bowling": "9/83", "five_wickets": 23, "catches": 64, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 225, "innings_bat": 198, "runs": 3783, "bat_avg": 23.79,
+        "hundreds": 1, "fifties": 14, "highest_score": "175*",
+        "innings_bowl": 221, "wickets": 253, "bowl_avg": 27.45,
+        "best_bowling": "5/43", "five_wickets": 1, "catches": 71, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Daniel Vettori",
+    "country": "New Zealand",
+    "role": "All-rounder",
+    "bat_hand": "Left",
+    "bowl_style": "Left-arm orthodox",
+    "formats": {
+      "Test": {
+        "matches": 113, "innings_bat": 173, "runs": 4531, "bat_avg": 30.00,
+        "hundreds": 6, "fifties": 23, "highest_score": "140",
+        "innings_bowl": 213, "wickets": 362, "bowl_avg": 34.36,
+        "best_bowling": "7/87", "five_wickets": 20, "catches": 58, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 295, "innings_bat": 218, "runs": 2253, "bat_avg": 16.81,
+        "hundreds": 0, "fifties": 4, "highest_score": "83",
+        "innings_bowl": 278, "wickets": 305, "bowl_avg": 31.71,
+        "best_bowling": "5/7", "five_wickets": 2, "catches": 72, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 34, "innings_bat": 20, "runs": 155, "bat_avg": 12.91,
+        "hundreds": 0, "fifties": 0, "highest_score": "38*",
+        "innings_bowl": 34, "wickets": 38, "bowl_avg": 20.26,
+        "best_bowling": "4/20", "five_wickets": 0, "catches": 7, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "MS Dhoni",
+    "country": "India",
+    "role": "Wicket-keeper",
+    "bat_hand": "Right",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 90, "innings_bat": 144, "runs": 4876, "bat_avg": 38.09,
+        "hundreds": 6, "fifties": 33, "highest_score": "224",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 256, "stumpings": 38
+      },
+      "ODI": {
+        "matches": 350, "innings_bat": 297, "runs": 10773, "bat_avg": 50.57,
+        "hundreds": 10, "fifties": 73, "highest_score": "183*",
+        "innings_bowl": 2, "wickets": 1, "bowl_avg": 31.00,
+        "best_bowling": "1/14", "five_wickets": 0, "catches": 321, "stumpings": 123
+      },
+      "T20I": {
+        "matches": 98, "innings_bat": 85, "runs": 1617, "bat_avg": 37.60,
+        "hundreds": 0, "fifties": 2, "highest_score": "56",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 57, "stumpings": 34
+      }
+    }
+  },
+  {
+    "name": "Adam Gilchrist",
+    "country": "Australia",
+    "role": "Wicket-keeper",
+    "bat_hand": "Left",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 96, "innings_bat": 137, "runs": 5570, "bat_avg": 47.60,
+        "hundreds": 17, "fifties": 26, "highest_score": "204*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 379, "stumpings": 37
+      },
+      "ODI": {
+        "matches": 287, "innings_bat": 279, "runs": 9619, "bat_avg": 35.89,
+        "hundreds": 16, "fifties": 55, "highest_score": "172",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 417, "stumpings": 55
+      },
+      "T20I": {
+        "matches": 13, "innings_bat": 11, "runs": 272, "bat_avg": 27.20,
+        "hundreds": 0, "fifties": 1, "highest_score": "48",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 14, "stumpings": 5
+      }
+    }
+  },
+  {
+    "name": "Mark Boucher",
+    "country": "South Africa",
+    "role": "Wicket-keeper",
+    "bat_hand": "Right",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 147, "innings_bat": 206, "runs": 5515, "bat_avg": 30.30,
+        "hundreds": 5, "fifties": 35, "highest_score": "125",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 532, "stumpings": 23
+      },
+      "ODI": {
+        "matches": 295, "innings_bat": 220, "runs": 4686, "bat_avg": 28.57,
+        "hundreds": 1, "fifties": 29, "highest_score": "147*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 403, "stumpings": 22
+      },
+      "T20I": {
+        "matches": 25, "innings_bat": 21, "runs": 295, "bat_avg": 16.38,
+        "hundreds": 0, "fifties": 0, "highest_score": "43*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 25, "stumpings": 3
+      }
+    }
+  },
+  {
+    "name": "Brendon McCullum",
+    "country": "New Zealand",
+    "role": "Wicket-keeper",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm medium",
+    "formats": {
+      "Test": {
+        "matches": 101, "innings_bat": 176, "runs": 6453, "bat_avg": 38.64,
+        "hundreds": 12, "fifties": 31, "highest_score": "302",
+        "innings_bowl": 4, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 173, "stumpings": 8
+      },
+      "ODI": {
+        "matches": 260, "innings_bat": 247, "runs": 6083, "bat_avg": 30.41,
+        "hundreds": 5, "fifties": 36, "highest_score": "166*",
+        "innings_bowl": 5, "wickets": 1, "bowl_avg": 107.00,
+        "best_bowling": "1/16", "five_wickets": 0, "catches": 227, "stumpings": 13
+      },
+      "T20I": {
+        "matches": 71, "innings_bat": 70, "runs": 2140, "bat_avg": 35.66,
+        "hundreds": 2, "fifties": 13, "highest_score": "123",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 37, "stumpings": 5
+      }
+    }
+  },
+  {
+    "name": "Jos Buttler",
+    "country": "England",
+    "role": "Wicket-keeper",
+    "bat_hand": "Right",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 57, "innings_bat": 96, "runs": 2907, "bat_avg": 31.59,
+        "hundreds": 2, "fifties": 19, "highest_score": "152",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 162, "stumpings": 8
+      },
+      "ODI": {
+        "matches": 166, "innings_bat": 151, "runs": 4850, "bat_avg": 39.91,
+        "hundreds": 10, "fifties": 22, "highest_score": "162*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 177, "stumpings": 13
+      },
+      "T20I": {
+        "matches": 115, "innings_bat": 103, "runs": 2846, "bat_avg": 33.48,
+        "hundreds": 1, "fifties": 20, "highest_score": "101*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 66, "stumpings": 22
+      }
+    }
+  },
+  {
+    "name": "Rishabh Pant",
+    "country": "India",
+    "role": "Wicket-keeper",
+    "bat_hand": "Left",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 38, "innings_bat": 63, "runs": 2462, "bat_avg": 44.03,
+        "hundreds": 6, "fifties": 9, "highest_score": "159*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 120, "stumpings": 14
+      },
+      "ODI": {
+        "matches": 33, "innings_bat": 29, "runs": 865, "bat_avg": 33.26,
+        "hundreds": 1, "fifties": 5, "highest_score": "125*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 31, "stumpings": 6
+      },
+      "T20I": {
+        "matches": 72, "innings_bat": 59, "runs": 1103, "bat_avg": 23.46,
+        "hundreds": 0, "fifties": 4, "highest_score": "65*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 43, "stumpings": 17
+      }
+    }
+  },
+  {
+    "name": "Quinton de Kock",
+    "country": "South Africa",
+    "role": "Wicket-keeper",
+    "bat_hand": "Left",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 63, "innings_bat": 113, "runs": 3935, "bat_avg": 38.21,
+        "hundreds": 7, "fifties": 24, "highest_score": "141*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 221, "stumpings": 11
+      },
+      "ODI": {
+        "matches": 148, "innings_bat": 145, "runs": 5965, "bat_avg": 44.81,
+        "hundreds": 17, "fifties": 26, "highest_score": "178",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 177, "stumpings": 10
+      },
+      "T20I": {
+        "matches": 79, "innings_bat": 78, "runs": 1679, "bat_avg": 24.33,
+        "hundreds": 0, "fifties": 10, "highest_score": "79*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 55, "stumpings": 20
+      }
+    }
+  },
+  {
+    "name": "Mohammad Rizwan",
+    "country": "Pakistan",
+    "role": "Wicket-keeper",
+    "bat_hand": "Right",
+    "bowl_style": "N/A",
+    "formats": {
+      "Test": {
+        "matches": 35, "innings_bat": 60, "runs": 2038, "bat_avg": 40.76,
+        "hundreds": 3, "fifties": 13, "highest_score": "171*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 81, "stumpings": 5
+      },
+      "ODI": {
+        "matches": 79, "innings_bat": 72, "runs": 2649, "bat_avg": 40.13,
+        "hundreds": 4, "fifties": 19, "highest_score": "115*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 73, "stumpings": 14
+      },
+      "T20I": {
+        "matches": 98, "innings_bat": 91, "runs": 3313, "bat_avg": 42.47,
+        "hundreds": 0, "fifties": 29, "highest_score": "104*",
+        "innings_bowl": 0, "wickets": 0, "bowl_avg": 0,
+        "best_bowling": "-", "five_wickets": 0, "catches": 55, "stumpings": 22
+      }
+    }
+  },
+  {
+    "name": "Chris Cairns",
+    "country": "New Zealand",
+    "role": "All-rounder",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm fast medium",
+    "formats": {
+      "Test": {
+        "matches": 62, "innings_bat": 104, "runs": 3320, "bat_avg": 33.53,
+        "hundreds": 5, "fifties": 22, "highest_score": "158",
+        "innings_bowl": 110, "wickets": 218, "bowl_avg": 29.40,
+        "best_bowling": "7/27", "five_wickets": 13, "catches": 36, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 215, "innings_bat": 189, "runs": 4950, "bat_avg": 29.46,
+        "hundreds": 4, "fifties": 26, "highest_score": "115",
+        "innings_bowl": 188, "wickets": 201, "bowl_avg": 32.80,
+        "best_bowling": "5/42", "five_wickets": 2, "catches": 51, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 2, "innings_bat": 2, "runs": 29, "bat_avg": 14.50,
+        "hundreds": 0, "fifties": 0, "highest_score": "20",
+        "innings_bowl": 2, "wickets": 2, "bowl_avg": 23.50,
+        "best_bowling": "1/14", "five_wickets": 0, "catches": 0, "stumpings": 0
+      }
+    }
+  },
+  {
+    "name": "Shahid Afridi",
+    "country": "Pakistan",
+    "role": "All-rounder",
+    "bat_hand": "Right",
+    "bowl_style": "Right-arm leg break",
+    "formats": {
+      "Test": {
+        "matches": 27, "innings_bat": 48, "runs": 1716, "bat_avg": 36.51,
+        "hundreds": 5, "fifties": 8, "highest_score": "156",
+        "innings_bowl": 46, "wickets": 48, "bowl_avg": 35.60,
+        "best_bowling": "5/52", "five_wickets": 1, "catches": 15, "stumpings": 0
+      },
+      "ODI": {
+        "matches": 398, "innings_bat": 369, "runs": 8064, "bat_avg": 23.57,
+        "hundreds": 6, "fifties": 39, "highest_score": "124",
+        "innings_bowl": 349, "wickets": 395, "bowl_avg": 34.51,
+        "best_bowling": "7/12", "five_wickets": 9, "catches": 112, "stumpings": 0
+      },
+      "T20I": {
+        "matches": 99, "innings_bat": 87, "runs": 1416, "bat_avg": 17.91,
+        "hundreds": 0, "fifties": 4, "highest_score": "54*",
+        "innings_bowl": 90, "wickets": 98, "bowl_avg": 24.44,
+        "best_bowling": "4/11", "five_wickets": 0, "catches": 24, "stumpings": 0
+      }
+    }
+  }
+]
