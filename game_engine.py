@@ -59,11 +59,14 @@ class Game:
         # No local match — try LLM spelling correction, then ESPN
         corrected = self._llm_correct_name(cricketer_name)
         if corrected and corrected.lower() != name_lower:
-            candidates = find_player_candidates(corrected, self.players_db)
-            if len(candidates) == 1:
-                return candidates[0], "confirm"
-            if len(candidates) > 1:
-                return candidates, "choose"
+            from difflib import SequenceMatcher
+            similarity = SequenceMatcher(None, name_lower, corrected.lower()).ratio()
+            if similarity > 0.5:
+                candidates = find_player_candidates(corrected, self.players_db)
+                if len(candidates) == 1:
+                    return candidates[0], "confirm"
+                if len(candidates) > 1:
+                    return candidates, "choose"
 
         return None, False
 
