@@ -13,6 +13,8 @@ let pickCount = 0;
 let pendingConfirm = null;
 let currentTurnPlayer = "";
 
+let typeQueue = Promise.resolve();
+
 function addMsg(text, cls) {
     const div = document.createElement("div");
     div.className = `msg ${cls}`;
@@ -25,6 +27,69 @@ function addMsg(text, cls) {
 function scrollToBottom() {
     const chat = document.getElementById("chat");
     requestAnimationFrame(() => { chat.scrollTop = chat.scrollHeight; });
+}
+
+function typeText(div, html, speed) {
+    return new Promise(resolve => {
+        let chars = [];
+        let i = 0;
+        while (i < html.length) {
+            if (html[i] === '<') {
+                let end = html.indexOf('>', i);
+                if (end !== -1) {
+                    chars.push(html.substring(i, end + 1));
+                    i = end + 1;
+                    continue;
+                }
+            }
+            if (html[i] === '&') {
+                let end = html.indexOf(';', i);
+                if (end !== -1 && end - i < 10) {
+                    chars.push(html.substring(i, end + 1));
+                    i = end + 1;
+                    continue;
+                }
+            }
+            chars.push(html[i]);
+            i++;
+        }
+
+        div.innerHTML = '';
+        div.classList.add('cursor-blink');
+        let pos = 0;
+        let buf = '';
+
+        function tick() {
+            if (pos >= chars.length) {
+                div.classList.remove('cursor-blink');
+                resolve();
+                return;
+            }
+            let chunk = chars[pos];
+            buf += chunk;
+            div.innerHTML = buf;
+            pos++;
+            if (chunk.startsWith('<') || chunk.startsWith('&')) {
+                tick();
+            } else {
+                scrollToBottom();
+                setTimeout(tick, speed);
+            }
+        }
+        tick();
+    });
+}
+
+function queueTyped(text, cls, speed = 18) {
+    let div;
+    typeQueue = typeQueue.then(() => {
+        div = document.createElement("div");
+        div.className = `msg ${cls}`;
+        messagesEl.appendChild(div);
+        scrollToBottom();
+        return typeText(div, text, speed);
+    });
+    return typeQueue;
 }
 
 function showTyping() {
@@ -51,9 +116,10 @@ function setInputEnabled(enabled) {
 }
 
 function botMsg(text) { return addMsg(text, "msg-bot"); }
+function botMsgTyped(text) { return queueTyped(text, "msg-bot", 8); }
 function userMsg(text) { addMsg(text, "msg-user"); }
-function statsMsg(text) { addMsg(text, "msg-stats"); }
-function commentaryMsg(text) { addMsg(text, "msg-commentary"); }
+function statsMsg(text) { return queueTyped(text, "msg-stats", 5); }
+function commentaryMsg(text) { return queueTyped(text, "msg-commentary", 10); }
 
 // --- Setup flow ---
 
@@ -241,21 +307,24 @@ async function startDraft(c) {
 
 // --- Draft flow ---
 
-function handlePickSuccess(data) {
+async function handlePickSuccess(data) {
     pickCount = data.pick_number;
     currentTurnPlayer = data.current_turn || "";
     const pickedFor = data.picked_for || "";
     const p = data.player;
 
     let prefix = numPlayers > 1 ? `[${pickedFor}] ` : "";
-    botMsg(`${prefix}✅ <b>${p.name}</b> — ${p.country} · ${p.role}` +
+    await botMsgTyped(`${prefix}✅ <b>${p.name}</b> — ${p.country} · ${p.role}` +
         (p.bat_hand !== "?" ? ` · ${p.bat_hand}-hand bat` : "") +
         (p.bowl_style && p.bowl_style !== "N/A" ? ` · ${p.bowl_style}` : ""));
-    if (data.stats) statsMsg(data.stats);
-    if (data.commentary) commentaryMsg(data.commentary);
+    if (data.stats) await statsMsg(data.stats);
+    if (data.commentary) await commentaryMsg(data.commentary);
 
     if (data.draft_complete) {
-        botMsg("🏆 <b>Draft complete!</b>\n\nType <b>my team</b> to see your final squad.");
+        await botMsgTyped("🏆 <b>Draft complete!</b>\n\nType <b>my team</b> to see your final squad.");
+        if (numPlayers >= 2) {
+            showSimulationSetup();
+        }
         state = "complete";
     } else {
         let turnMsg = `<span class="pick-counter">Pick ${data.next_pick} of 11</span>`;
@@ -271,6 +340,12 @@ function handlePickSuccess(data) {
 async function handleDraftInput(text) {
     const lower = text.toLowerCase().trim();
 
+    if ((lower === "simulate" || lower === "simulate match") && state === "complete" && numPlayers >= 2) {
+        userMsg(text);
+        showSimulationSetup();
+        return;
+    }
+
     if (lower === "hint") {
         userMsg(text);
         showTyping();
@@ -282,7 +357,7 @@ async function handleDraftInput(text) {
         });
         const data = await resp.json();
         hideTyping();
-        botMsg(`💡 ${data.hint}`);
+        await botMsgTyped(`💡 ${data.hint}`);
         setInputEnabled(true);
         return;
     }
@@ -325,7 +400,6 @@ async function handleDraftInput(text) {
         yesBtn.onclick = () => {
             disableAllButtons();
             userMsg("Yes");
-            pendingConfirm = data.candidate;
             showTyping();
             setInputEnabled(false);
             confirmPick(text, data.candidate);
@@ -365,20 +439,57 @@ async function handleDraftInput(text) {
 
         const noneBtn = document.createElement("button");
         noneBtn.className = "candidate-btn";
-        noneBtn.textContent = "None of these";
-        noneBtn.onclick = () => {
+        noneBtn.textContent = "None of these — search online";
+        noneBtn.onclick = async () => {
             disableAllButtons();
             userMsg("None of these");
-            botMsg("Try a different name.");
-            setInputEnabled(true);
-            inputEl.focus();
+            showTyping();
+            setInputEnabled(false);
+            const resp2 = await fetch("/api/pick", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ game_id: gameId, cricketer: text, force_espn: true }),
+            });
+            const data2 = await resp2.json();
+            hideTyping();
+            if (data2.status === "picked") {
+                handlePickSuccess(data2);
+            } else if (data2.status === "confirm") {
+                const div2 = botMsg(data2.message);
+                const btns2 = document.createElement("div");
+                btns2.className = "confirm-buttons";
+                const yesBtn2 = document.createElement("button");
+                yesBtn2.className = "btn-yes";
+                yesBtn2.textContent = "Yes";
+                yesBtn2.onclick = () => {
+                    disableAllButtons();
+                    userMsg("Yes");
+                    showTyping();
+                    setInputEnabled(false);
+                    confirmPick(text, data2.candidate);
+                };
+                const noBtn2 = document.createElement("button");
+                noBtn2.textContent = "No";
+                noBtn2.onclick = () => {
+                    disableAllButtons();
+                    userMsg("No");
+                    botMsg("No worries — try another name.");
+                    setInputEnabled(true);
+                };
+                btns2.appendChild(yesBtn2);
+                btns2.appendChild(noBtn2);
+                div2.appendChild(btns2);
+            } else {
+                await botMsgTyped(`❌ ${data2.message || "Could not find this player."}`);
+                setInputEnabled(true);
+            }
         };
         list.appendChild(noneBtn);
 
         div.appendChild(list);
 
     } else if (data.status === "rejected") {
-        botMsg(`❌ ${data.message}`);
+        await botMsgTyped(`❌ ${data.message}`);
         setInputEnabled(true);
     }
 }
@@ -397,9 +508,9 @@ async function confirmPick(originalText, confirmedName) {
     hideTyping();
 
     if (data.status === "picked") {
-        handlePickSuccess(data);
+        await handlePickSuccess(data);
     } else {
-        botMsg(`❌ ${data.message}`);
+        await botMsgTyped(`❌ ${data.message}`);
         setInputEnabled(true);
     }
 }
@@ -415,6 +526,11 @@ function renderTeamCard(data) {
 
     const body = document.createElement("div");
     body.className = "team-body";
+
+    const colHeader = document.createElement("div");
+    colHeader.className = "team-row team-col-header";
+    colHeader.innerHTML = `<span class="player-name"></span><span class="player-stat">Runs</span><span class="player-stat">Avg</span><span class="player-stat">Wkts</span><span class="player-stat">Avg</span>`;
+    body.appendChild(colHeader);
 
     let currentRole = null;
     const roleLabels = { "Batsman": "Batsmen", "Wicket-keeper": "Wicket-keepers", "All-rounder": "All-rounders", "Bowler": "Bowlers" };
@@ -438,18 +554,23 @@ function renderTeamCard(data) {
 
         const runs = document.createElement("span");
         runs.className = "player-stat";
-        runs.textContent = p.runs !== "-" ? `${p.runs}r` : "";
+        runs.textContent = p.runs !== "-" ? `${p.runs}` : "";
         row.appendChild(runs);
 
         const avg = document.createElement("span");
         avg.className = "player-stat";
-        avg.textContent = p.bat_avg !== "-" && p.bat_avg !== 0 ? `${p.bat_avg}av` : "";
+        avg.textContent = p.bat_avg !== "-" && p.bat_avg !== 0 ? `${p.bat_avg}` : "";
         row.appendChild(avg);
 
         const wkts = document.createElement("span");
         wkts.className = "player-stat";
-        wkts.textContent = p.wickets !== "-" && p.wickets > 0 ? `${p.wickets}w` : "";
+        wkts.textContent = p.wickets !== "-" && p.wickets > 0 ? `${p.wickets}` : "";
         row.appendChild(wkts);
+
+        const bowlAvg = document.createElement("span");
+        bowlAvg.className = "player-stat";
+        bowlAvg.textContent = p.bowl_avg !== "-" && p.bowl_avg > 0 ? `${p.bowl_avg}` : "";
+        row.appendChild(bowlAvg);
 
         body.appendChild(row);
     });
@@ -483,6 +604,120 @@ async function showTeam() {
             renderTeamCard(data);
         }
     }
+    if (state === "drafting") {
+        let turnMsg = `<span class="pick-counter">Pick ${data.next_pick || "?"} of 11</span>`;
+        if (numPlayers > 1) {
+            turnMsg = `<b>${currentTurnPlayer}</b>'s turn — ` + turnMsg;
+        }
+        addMsg(turnMsg, "msg-bot");
+    }
+    setInputEnabled(true);
+}
+
+// --- Match simulation ---
+
+let simNumMatches = 1;
+let simVenueCountry = "";
+
+function showSimulationSetup() {
+    const div = botMsg("How many matches in the series?");
+    const opts = document.createElement("div");
+    opts.className = "setup-options";
+    [1, 3, 5].forEach(n => {
+        const btn = document.createElement("button");
+        btn.textContent = n === 1 ? "1 match" : `${n}-match series`;
+        btn.onclick = () => {
+            disableAllButtons();
+            userMsg(btn.textContent);
+            simNumMatches = n;
+            askVenueCountry();
+        };
+        opts.appendChild(btn);
+    });
+    div.appendChild(opts);
+}
+
+async function askVenueCountry() {
+    showTyping();
+    const resp = await fetch("/api/venues");
+    const data = await resp.json();
+    hideTyping();
+
+    const div = botMsg("Where should the series be played?");
+    const opts = document.createElement("div");
+    opts.className = "setup-options";
+
+    const wwBtn = document.createElement("button");
+    wwBtn.textContent = "Worldwide (random venues)";
+    wwBtn.onclick = () => { disableAllButtons(); selectVenue("Worldwide"); };
+    opts.appendChild(wwBtn);
+
+    data.countries.forEach(country => {
+        const btn = document.createElement("button");
+        btn.textContent = country;
+        btn.onclick = () => { disableAllButtons(); selectVenue(country); };
+        opts.appendChild(btn);
+    });
+    div.appendChild(opts);
+}
+
+function selectVenue(country) {
+    simVenueCountry = country;
+    userMsg(country);
+    state = "simulating";
+    simulateMatch();
+}
+
+async function simulateMatch() {
+    botMsg(`Simulating ${simNumMatches > 1 ? simNumMatches + "-match series" : "match"} in ${simVenueCountry}...\n\n<span class="pick-counter">This may take a minute${simNumMatches > 1 ? " or two" : ""}${gameFormat === "Test" ? " — Test matches are simulated day by day" : ""}.</span>`);
+    showTyping();
+    setInputEnabled(false);
+
+    const resp = await fetch("/api/simulate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ game_id: gameId, num_matches: simNumMatches, venue_country: simVenueCountry }),
+    });
+    const data = await resp.json();
+    hideTyping();
+    state = "complete";
+
+    if (data.error) {
+        botMsg(`❌ ${data.error}`);
+        setInputEnabled(true);
+        return;
+    }
+
+    for (const series of data.results) {
+        const teamA = series.team_a;
+        const teamB = series.team_b;
+
+        for (let mi = 0; mi < series.matches.length; mi++) {
+            const match = series.matches[mi];
+            const matchTitle = match.match_number ? `Match ${match.match_number}` : "Match";
+            const venueStr = match.venue || "";
+
+            addMsg(`\n⚔️ <b>${teamA}'s XI vs ${teamB}'s XI — ${matchTitle}</b>\n📍 ${venueStr}`, "msg-bot");
+
+            for (const seg of match.segments) {
+                const segDiv = document.createElement("div");
+                segDiv.className = "msg msg-sim-segment";
+                segDiv.innerHTML = `<div class="sim-segment-label">${seg.label}</div><div class="sim-segment-body">${seg.text}</div>`;
+                messagesEl.appendChild(segDiv);
+            }
+            scrollToBottom();
+        }
+
+        if (series.series_summary) {
+            const sumDiv = document.createElement("div");
+            sumDiv.className = "msg msg-sim-summary";
+            sumDiv.innerHTML = `🏆 ${series.series_summary}`;
+            messagesEl.appendChild(sumDiv);
+            scrollToBottom();
+        }
+    }
+
+    botMsg("\nType <b>my team</b> to review your squads, or <b>simulate</b> to play again.");
     setInputEnabled(true);
 }
 
@@ -503,6 +738,10 @@ function handleSend() {
             constraint = text;
             state = "drafting";
             startDraft(text);
+            break;
+        case "ask_venue":
+            userMsg(text);
+            selectVenue(text);
             break;
         case "drafting":
         case "complete":

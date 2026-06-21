@@ -140,7 +140,7 @@ header h1 {
 }
 
 .msg-commentary {
-    color: #888;
+    color: #aa9944;
     align-self: flex-start;
     font-style: italic;
     font-size: 13px;
@@ -149,8 +149,55 @@ header h1 {
 
 .msg-commentary::before {
     content: '  // ';
-    color: #555;
+    color: #887733;
     font-style: normal;
+}
+
+.msg-sim {
+    color: #33ff33;
+    align-self: flex-start;
+    font-size: 13px;
+    padding: 4px 0 4px 12px;
+    border-left: 2px solid #1a8a1a;
+    margin-left: 2px;
+}
+
+.msg-sim-segment {
+    align-self: flex-start;
+    font-size: 13px;
+    padding: 8px 0 8px 12px;
+    border-left: 2px solid #1a8a1a;
+    margin: 6px 0 6px 2px;
+    color: #33ff33;
+}
+
+.sim-segment-label {
+    color: #ffcc00;
+    font-weight: bold;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed #1a3a1a;
+}
+
+.sim-segment-body {
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.msg-sim-summary {
+    align-self: flex-start;
+    font-size: 14px;
+    padding: 10px 12px;
+    margin: 8px 0;
+    border: 1px solid #1a8a1a;
+    background: #0f1a0f;
+    color: #33ff33;
+    white-space: pre-wrap;
+    line-height: 1.7;
 }
 
 .msg-team {
@@ -175,6 +222,16 @@ header h1 {
 .msg-team .team-row {
     display: flex;
     padding: 2px 0;
+}
+
+.msg-team .team-row.team-col-header {
+    color: #1a8a1a;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #1a3a1a;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
 }
 
 .msg-team .team-row.role-header {

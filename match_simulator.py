@@ -273,6 +273,214 @@ def simulate_match(team1, team2, team1_name, team2_name, venue_country, game_for
         return _simulate_limited_overs(team1, team2, team1_name, team2_name, venue, game_format, match_number)
 
 
+def _clean_for_web(text):
+    import re
+    text = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', text)
+    text = text.replace("---", "")
+    return text.strip()
+
+
+def _simulate_limited_overs_web(team1, team2, team1_name, team2_name, venue, game_format, match_number=None):
+    match_label = f"Match {match_number}" if match_number else "Match"
+    overs = "50" if game_format == "ODI" else "20"
+    fmt_long = "One Day International (50 overs per side)" if game_format == "ODI" else "T20 International (20 overs per side)"
+    teams_block = _teams_block(team1, team2, team1_name, team2_name, game_format)
+
+    prompt_1 = f"""Simulate the toss and FIRST INNINGS ONLY of a {fmt_long} cricket match.
+
+{match_label} at {venue}
+Conditions: Consider the typical pitch and weather conditions at this ground.
+
+{teams_block}
+
+Simulate realistically based on career statistics with natural variance.
+
+Provide ONLY the toss and first innings in this EXACT format:
+
+TOSS: <team> won the toss and elected to <bat/bowl>
+
+FIRST INNINGS: <team name> — <total>/<wickets> in <overs> overs
+Top scorers:
+- <Player>: <runs> (<balls>) [<4s> fours, <6s> sixes]
+- <Player>: <runs> (<balls>) [<4s> fours, <6s> sixes]
+Key bowlers:
+- <Player>: <wickets>/<runs> (<overs> overs)
+- <Player>: <wickets>/<runs> (<overs> overs)
+
+INNINGS NARRATIVE:
+<1 paragraph describing the key moments of the first innings>
+
+Do NOT simulate the second innings yet. Do not use markdown formatting."""
+
+    first_innings = chat(
+        messages=[{"role": "user", "content": prompt_1}],
+        system=SYSTEM_PROMPT,
+        max_tokens=800,
+        model=HEAVY_MODEL,
+    )
+
+    prompt_2 = f"""Continue the match. Here is what happened in the first innings:
+
+{first_innings}
+
+Now simulate the SECOND INNINGS and provide the match result.
+
+{teams_block}
+
+Provide the second innings and result in this EXACT format:
+
+SECOND INNINGS: <team name> — <total>/<wickets> in <overs> overs
+Top scorers:
+- <Player>: <runs> (<balls>) [<4s> fours, <6s> sixes]
+- <Player>: <runs> (<balls>) [<4s> fours, <6s> sixes]
+Key bowlers:
+- <Player>: <wickets>/<runs> (<overs> overs)
+- <Player>: <wickets>/<runs> (<overs> overs)
+
+INNINGS NARRATIVE:
+<1 paragraph describing the chase/defense — pressure moments, key wickets>
+
+RESULT: <team name> won by <margin>
+PLAYER OF THE MATCH: <Player Name> (<brief reason>)
+
+Do not use markdown formatting."""
+
+    second_innings = chat(
+        messages=[
+            {"role": "user", "content": prompt_1},
+            {"role": "assistant", "content": first_innings},
+            {"role": "user", "content": prompt_2},
+        ],
+        system=SYSTEM_PROMPT,
+        max_tokens=800,
+        model=HEAVY_MODEL,
+    )
+
+    segments = [
+        {"label": "First Innings", "text": _clean_for_web(first_innings)},
+        {"label": "Second Innings & Result", "text": _clean_for_web(second_innings)},
+    ]
+
+    result_line = ""
+    for line in second_innings.splitlines():
+        if line.strip().upper().startswith("RESULT:"):
+            result_line = line.strip()
+            break
+
+    return {"venue": venue, "match_number": match_number, "segments": segments, "result_line": result_line}
+
+
+def _simulate_test_web(team1, team2, team1_name, team2_name, venue, match_number=None):
+    match_label = f"Match {match_number}" if match_number else "Match"
+    teams_block = _teams_block(team1, team2, team1_name, team2_name, "Test")
+
+    messages = []
+    segments = []
+
+    prompt_day1 = f"""Simulate DAY 1 ONLY of a Test match (5 days, 2 innings per side).
+
+{match_label} at {venue}
+Conditions: Consider the typical pitch and weather conditions at this ground.
+
+{teams_block}
+
+Simulate realistically based on career statistics with natural variance. Roughly 90 overs are bowled each day.
+
+Provide Day 1 in this EXACT format:
+
+TOSS: <team> won the toss and elected to <bat/bowl>
+
+DAY 1 SUMMARY:
+<team name> — <score>/<wickets> at stumps
+
+Key performers:
+- <Player>: <runs> (<balls>) or <wickets>/<runs> (<overs> overs)
+- <Player>: <runs> (<balls>) or <wickets>/<runs> (<overs> overs)
+
+DAY 1 NARRATIVE:
+<1-2 paragraphs of engaging commentary describing the day's play>
+
+MATCH STATE: <concise state at stumps>
+
+Do NOT simulate beyond Day 1. Do not use markdown formatting."""
+
+    messages.append({"role": "user", "content": prompt_day1})
+    day1_text = chat(messages=messages, system=SYSTEM_PROMPT, max_tokens=800, model=HEAVY_MODEL)
+    segments.append({"label": "Day 1", "text": _clean_for_web(day1_text)})
+    messages.append({"role": "assistant", "content": day1_text})
+
+    result_line = ""
+    for day_num in range(2, 6):
+        prompt_day = f"""Continue the Test match. Simulate DAY {day_num} ONLY.
+
+Pick up exactly where the previous day ended. Roughly 90 overs are bowled each day.
+
+Provide Day {day_num} in this EXACT format:
+
+DAY {day_num} SUMMARY:
+<current batting team> — <score>/<wickets> (and any completed innings)
+
+Key performers today:
+- <Player>: <runs> (<balls>) or <wickets>/<runs> (<overs> overs)
+- <Player>: <runs> (<balls>) or <wickets>/<runs> (<overs> overs)
+
+DAY {day_num} NARRATIVE:
+<1-2 paragraphs of engaging commentary for today's play>
+
+MATCH STATE: <concise current state — all innings scores and current position>
+
+{"If the match concludes today, add:" if day_num >= 3 else ""}
+{"RESULT: <team name> won by <margin> (or match drawn)" if day_num >= 3 else ""}
+{"PLAYER OF THE MATCH: <Player Name> (<brief reason>)" if day_num >= 3 else ""}
+
+{"If the match is not yet decided, do NOT declare a result." if day_num < 5 else "The match MUST conclude today — if no outright result, declare a draw."}
+
+Do NOT simulate beyond Day {day_num}. Do not use markdown formatting."""
+
+        messages.append({"role": "user", "content": prompt_day})
+        day_text = chat(messages=messages, system=SYSTEM_PROMPT, max_tokens=800, model=HEAVY_MODEL)
+        segments.append({"label": f"Day {day_num}", "text": _clean_for_web(day_text)})
+        messages.append({"role": "assistant", "content": day_text})
+
+        if "RESULT:" in day_text:
+            for line in day_text.splitlines():
+                if line.strip().upper().startswith("RESULT:"):
+                    result_line = line.strip()
+                    break
+            break
+
+    return {"venue": venue, "match_number": match_number, "segments": segments, "result_line": result_line}
+
+
+def simulate_series_web(team1, team2, team1_name, team2_name, venue_country, game_format, num_matches):
+    matches = []
+    for i in range(1, num_matches + 1):
+        venue = pick_venue(venue_country)
+        if game_format == "Test":
+            result = _simulate_test_web(team1, team2, team1_name, team2_name, venue, i if num_matches > 1 else None)
+        else:
+            result = _simulate_limited_overs_web(team1, team2, team1_name, team2_name, venue, game_format, i if num_matches > 1 else None)
+        matches.append(result)
+
+    series_summary = None
+    if num_matches > 1:
+        all_text = "\n\n".join(m.get("result_line", "") for m in matches if m.get("result_line"))
+        try:
+            series_summary = chat(
+                messages=[{
+                    "role": "user",
+                    "content": f"Based on these {num_matches} match results between {team1_name} and {team2_name}:\n\n{all_text}\n\nProvide a brief series summary in this format:\nSERIES RESULT: <team> won the series <X>-<Y> (or drawn)\nPLAYER OF THE SERIES: <name> (<brief reason>)\nSERIES SUMMARY: <1 paragraph summary>\n\nDo not use markdown.",
+                }],
+                max_tokens=300,
+                model=HEAVY_MODEL,
+            )
+            series_summary = _clean_for_web(series_summary)
+        except Exception:
+            series_summary = None
+
+    return {"matches": matches, "series_summary": series_summary}
+
+
 def simulate_series(team1, team2, team1_name, team2_name, venue_country, game_format, num_matches):
     results = []
     for i in range(1, num_matches + 1):
