@@ -1,6 +1,8 @@
 import random
 from llm_client import chat, HEAVY_MODEL
 
+SIM_MODEL = "gemma4:31b"
+
 VENUES = {
     "India": ["Wankhede Stadium, Mumbai", "Eden Gardens, Kolkata", "M. Chinnaswamy Stadium, Bangalore", "MA Chidambaram Stadium, Chennai", "Narendra Modi Stadium, Ahmedabad"],
     "Australia": ["Melbourne Cricket Ground", "Sydney Cricket Ground", "The Gabba, Brisbane", "Adelaide Oval", "WACA Ground, Perth"],
@@ -93,7 +95,7 @@ Do NOT simulate the second innings yet. Stop after the first innings narrative."
         messages=[{"role": "user", "content": prompt_1}],
         system=SYSTEM_PROMPT,
         max_tokens=800,
-        model=HEAVY_MODEL,
+        model=SIM_MODEL,
     )
 
     _print_segment(first_innings)
@@ -132,7 +134,7 @@ PLAYER OF THE MATCH: <Player Name> (<brief reason>)"""
         ],
         system=SYSTEM_PROMPT,
         max_tokens=800,
-        model=HEAVY_MODEL,
+        model=SIM_MODEL,
     )
 
     print(second_innings)
@@ -190,7 +192,7 @@ Do NOT simulate beyond Day 1."""
         messages=messages,
         system=SYSTEM_PROMPT,
         max_tokens=800,
-        model=HEAVY_MODEL,
+        model=SIM_MODEL,
     )
 
     day_texts.append(day1_text)
@@ -231,7 +233,7 @@ Do NOT simulate beyond Day {day_num}."""
             messages=messages,
             system=SYSTEM_PROMPT,
             max_tokens=800,
-            model=HEAVY_MODEL,
+            model=SIM_MODEL,
         )
 
         day_texts.append(day_text)
@@ -316,7 +318,7 @@ Do NOT simulate the second innings yet. Do not use markdown formatting."""
         messages=[{"role": "user", "content": prompt_1}],
         system=SYSTEM_PROMPT,
         max_tokens=800,
-        model=HEAVY_MODEL,
+        model=SIM_MODEL,
     )
 
     prompt_2 = f"""Continue the match. Here is what happened in the first innings:
@@ -353,7 +355,7 @@ Do not use markdown formatting."""
         ],
         system=SYSTEM_PROMPT,
         max_tokens=800,
-        model=HEAVY_MODEL,
+        model=SIM_MODEL,
     )
 
     segments = [
@@ -405,7 +407,7 @@ MATCH STATE: <concise state at stumps>
 Do NOT simulate beyond Day 1. Do not use markdown formatting."""
 
     messages.append({"role": "user", "content": prompt_day1})
-    day1_text = chat(messages=messages, system=SYSTEM_PROMPT, max_tokens=800, model=HEAVY_MODEL)
+    day1_text = chat(messages=messages, system=SYSTEM_PROMPT, max_tokens=800, model=SIM_MODEL)
     segments.append({"label": "Day 1", "text": _clean_for_web(day1_text)})
     messages.append({"role": "assistant", "content": day1_text})
 
@@ -438,7 +440,7 @@ MATCH STATE: <concise current state — all innings scores and current position>
 Do NOT simulate beyond Day {day_num}. Do not use markdown formatting."""
 
         messages.append({"role": "user", "content": prompt_day})
-        day_text = chat(messages=messages, system=SYSTEM_PROMPT, max_tokens=800, model=HEAVY_MODEL)
+        day_text = chat(messages=messages, system=SYSTEM_PROMPT, max_tokens=800, model=SIM_MODEL)
         segments.append({"label": f"Day {day_num}", "text": _clean_for_web(day_text)})
         messages.append({"role": "assistant", "content": day_text})
 
@@ -472,7 +474,7 @@ def simulate_series_web(team1, team2, team1_name, team2_name, venue_country, gam
                     "content": f"Based on these {num_matches} match results between {team1_name} and {team2_name}:\n\n{all_text}\n\nProvide a brief series summary in this format:\nSERIES RESULT: <team> won the series <X>-<Y> (or drawn)\nPLAYER OF THE SERIES: <name> (<brief reason>)\nSERIES SUMMARY: <1 paragraph summary>\n\nDo not use markdown.",
                 }],
                 max_tokens=300,
-                model=HEAVY_MODEL,
+                model=SIM_MODEL,
             )
             series_summary = _clean_for_web(series_summary)
         except Exception:
@@ -510,7 +512,7 @@ SERIES SUMMARY: <1-2 paragraph summary of the series>""",
                 }
             ],
             max_tokens=500,
-            model=HEAVY_MODEL,
+            model=SIM_MODEL,
         )
     else:
         series_summary = None
