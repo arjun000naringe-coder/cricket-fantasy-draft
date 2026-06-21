@@ -1,6 +1,23 @@
+import re
 from scraper import find_player_local, find_player_candidates, load_players, scrape_and_cache
 from prompt_generator import validate_player_against_constraint, generate_hint
+from constraint_checker import validate_constraint
 from llm_client import chat
+
+
+def _is_valid_player_name(name):
+    if not name or len(name) > 50:
+        return False
+    if re.search(r'[0-9/():\[\]{}]', name):
+        return False
+    if len(name.split()) > 6:
+        return False
+    noise = ["innings", "wicket", "bowler", "batsmen", "scored", "average",
+             "select", "constraint", "fantasy", "draft", "pick ", "analyze"]
+    lower = name.lower()
+    if any(w in lower for w in noise):
+        return False
+    return True
 
 
 class Game:
@@ -36,13 +53,15 @@ class Game:
             if p["name"].lower() == name_lower:
                 return p, True
 
-        # Check nickname — exact nickname hit = no confirmation needed
+        # Check nickname — resolve via fuzzy matching on the target name
         from scraper import NICKNAMES
         if name_lower in NICKNAMES:
-            nick_target = NICKNAMES[name_lower].lower()
-            for p in self.players_db:
-                if p["name"].lower() == nick_target:
-                    return p, True
+            nick_target = NICKNAMES[name_lower]
+            nick_candidates = find_player_candidates(nick_target, self.players_db)
+            if len(nick_candidates) == 1:
+                return nick_candidates[0], True
+            if len(nick_candidates) > 1:
+                return nick_candidates[0], "confirm"
 
         # Find candidates (fuzzy)
         candidates = find_player_candidates(cricketer_name, self.players_db)
@@ -56,17 +75,27 @@ class Game:
         if len(candidates) > 1:
             return candidates, "choose"
 
-        # No local match — try LLM spelling correction, then ESPN
+        # No local match — try LLM spelling correction
         corrected = self._llm_correct_name(cricketer_name)
         if corrected and corrected.lower() != name_lower:
             from difflib import SequenceMatcher
-            similarity = SequenceMatcher(None, name_lower, corrected.lower()).ratio()
-            if similarity > 0.5:
+            corrected_lower = corrected.lower()
+            input_words = name_lower.split()
+            corrected_words = corrected_lower.split()
+            overall_sim = SequenceMatcher(None, name_lower, corrected_lower).ratio()
+            words_found = sum(
+                1 for w in input_words
+                if any(SequenceMatcher(None, w, cw).ratio() > 0.7 for cw in corrected_words)
+            )
+            is_plausible = overall_sim > 0.4 and words_found >= 1
+            if is_plausible:
                 candidates = find_player_candidates(corrected, self.players_db)
                 if len(candidates) == 1:
                     return candidates[0], "confirm"
                 if len(candidates) > 1:
                     return candidates, "choose"
+                # Not in local DB either — return corrected name for ESPN lookup
+                return corrected, False
 
         return None, False
 
@@ -75,7 +104,7 @@ class Game:
             result = chat(
                 messages=[{
                     "role": "user",
-                    "content": f'The user typed "{name}" as a cricketer\'s name. If this is misspelled, reply with ONLY the corrected full name. If it\'s already correct or you\'re unsure, reply with ONLY the name as-is. No explanation.',
+                    "content": f'The user typed "{name}" as a cricketer\'s name in a {self.game_format} fantasy game. If this is misspelled, reply with the corrected full name. If only a surname or partial name was given, reply with the most likely full name for that format. Reply with ONLY the full player name, nothing else.',
                 }],
                 system="You are a cricket name spellchecker. Reply with only the corrected player name, nothing else.",
                 max_tokens=30,
@@ -85,29 +114,16 @@ class Game:
         except Exception:
             return None
 
-    def _llm_player_metadata(self, name):
-        try:
-            result = chat(
-                messages=[{
-                    "role": "user",
-                    "content": f'For the cricketer "{name}", provide: country, role (Batsman/Bowler/All-rounder/Wicket-keeper), batting hand (Left/Right), bowling style. Reply in EXACTLY this format:\ncountry: <country>\nrole: <role>\nbat_hand: <Left or Right>\nbowl_style: <style or N/A>',
-                }],
-                system="You are a cricket knowledge expert. Reply with only the requested fields, nothing else.",
-                max_tokens=60,
-            )
-            meta = {}
-            for line in result.strip().split("\n"):
-                if ":" in line:
-                    key, val = line.split(":", 1)
-                    meta[key.strip().lower().replace(" ", "_")] = val.strip()
-            return meta
-        except Exception:
-            return {}
-
     def make_pick(self, cricketer_name, confirmed_player=None):
         if confirmed_player:
             player_data = confirmed_player
         else:
+            cleaned = re.sub(r'^[-–•*\d.]+\s*', '', cricketer_name).strip()
+            if cleaned != cricketer_name:
+                cricketer_name = cleaned
+            if not _is_valid_player_name(cricketer_name):
+                return False, "That doesn't look like a player name. Try typing a cricketer's name.", None
+
             name_lower = cricketer_name.strip().lower()
             for picked in self.all_picked:
                 if picked["name"].lower() == name_lower:
@@ -124,39 +140,23 @@ class Game:
             if status is True:
                 player_data = result
             else:
-                # Not in local DB — try ESPN scrape
-                print(f"  Looking up {cricketer_name} on ESPNcricinfo...")
-                player_data = scrape_and_cache(cricketer_name, self.game_format)
+                # Not in local DB — try ESPN scrape with corrected name if available
+                espn_name = result if isinstance(result, str) else cricketer_name
+                print(f"  Looking up {espn_name} on ESPNcricinfo...")
+                player_data = scrape_and_cache(espn_name, self.game_format)
                 if player_data:
                     self.players_db = load_players()
                 else:
-                    is_valid, reason = validate_player_against_constraint(
-                        {"name": cricketer_name, "note": "Player not found in database, using LLM knowledge"},
-                        self.constraint,
-                        self.game_format,
-                    )
-                    if not is_valid:
-                        return False, f"Could not verify {cricketer_name}. {reason}", None
-                    metadata = self._llm_player_metadata(cricketer_name)
-                    player_data = {
-                        "name": cricketer_name,
-                        "country": metadata.get("country", "Unknown"),
-                        "role": metadata.get("role", "Unknown"),
-                        "bat_hand": metadata.get("bat_hand", "Unknown"),
-                        "bowl_style": metadata.get("bowl_style", "Unknown"),
-                        "formats": {},
-                    }
-                    print(f"  Note: {cricketer_name} stats are approximate (not found on ESPN).")
+                    return False, f"{cricketer_name} not found in database or on ESPNcricinfo. Check the spelling and try again.", None
 
         # Check duplicate with resolved name
         for picked in self.all_picked:
             if picked["name"].lower() == player_data["name"].lower():
                 return False, f"{player_data['name']} has already been picked.", None
 
-        if player_data.get("formats", {}).get(self.game_format):
-            is_valid, reason = validate_player_against_constraint(
-                player_data, self.constraint, self.game_format
-            )
+        result = validate_constraint(player_data, self.constraint, self.game_format)
+        if result is not None:
+            is_valid, reason = result
         else:
             is_valid, reason = validate_player_against_constraint(
                 player_data, self.constraint, self.game_format

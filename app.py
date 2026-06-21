@@ -117,13 +117,11 @@ def make_pick():
 
     def _pick_success_response(picked_player, game):
         stats = _format_stats_card(picked_player, game.game_format)
-        commentary = _generate_pick_commentary(picked_player, game.game_format, game.constraint)
         prev_player = game.player_names[(game.current_turn_index - 1) % game.num_players]
         return jsonify({
             "status": "picked",
             "player": _player_summary(picked_player, game.game_format),
             "stats": stats,
-            "commentary": commentary,
             "picked_for": prev_player,
             "current_turn": game.current_player,
             "pick_number": len(game.teams[prev_player]),
@@ -143,6 +141,23 @@ def make_pick():
 
     if not cricketer:
         return jsonify({"status": "rejected", "message": "Type a cricketer's name to pick them."})
+
+    force_espn = data.get("force_espn", False)
+    if force_espn:
+        from scraper import scrape_and_cache
+        player_data = scrape_and_cache(cricketer, game.game_format)
+        if player_data:
+            game.players_db = __import__('scraper').load_players()
+            for picked in game.all_picked:
+                if picked["name"].lower() == player_data["name"].lower():
+                    return jsonify({"status": "rejected", "message": f"{player_data['name']} has already been picked."})
+            return jsonify({
+                "status": "confirm",
+                "message": f"Found: <b>{player_data['name']}</b> ({player_data.get('country', '?')}, {player_data.get('role', '?')}). Add to team?",
+                "candidate": player_data["name"],
+            })
+        else:
+            return jsonify({"status": "rejected", "message": f"Could not find {cricketer} on ESPNcricinfo."})
 
     success, message, action = game.make_pick(cricketer)
 
@@ -183,6 +198,19 @@ def _player_summary(player, game_format):
         "bat_hand": player.get("bat_hand", "?"),
         "bowl_style": player.get("bowl_style", "N/A"),
     }
+
+
+@app.route("/api/teams_raw", methods=["POST"])
+def get_teams_raw():
+    data = request.json
+    game_id = data.get("game_id")
+    game = games.get(game_id)
+    if not game:
+        return jsonify({"error": "Game not found."}), 404
+    teams = {}
+    for name in game.player_names:
+        teams[name] = game.teams[name]
+    return jsonify({"teams": teams, "format": game.game_format})
 
 
 @app.route("/api/hint", methods=["POST"])
@@ -230,10 +258,12 @@ def get_team():
         return jsonify({"error": "Game not found."}), 404
 
     if game.num_players == 1:
-        return jsonify(_build_team_data(game.player_names[0], game))
+        data = _build_team_data(game.player_names[0], game)
+        data["next_pick"] = game.current_pick_number
+        return jsonify(data)
     else:
         teams = [_build_team_data(name, game) for name in game.player_names]
-        return jsonify({"teams": teams, "format": game.game_format})
+        return jsonify({"teams": teams, "format": game.game_format, "next_pick": game.current_pick_number})
 
 
 @app.route("/api/reroll_constraint", methods=["POST"])
@@ -242,6 +272,69 @@ def reroll_constraint():
     game_format = data.get("format", "T20I")
     constraint = get_random_constraint(game_format)
     return jsonify({"constraint": constraint})
+
+
+@app.route("/api/debug/prefill", methods=["POST"])
+def debug_prefill():
+    from scraper import load_players
+    players_db = load_players()
+    def find(name):
+        for p in players_db:
+            if p["name"].lower() == name.lower():
+                return p
+        return None
+    team_a_names = ["Sachin Tendulkar", "Virat Kohli", "Ricky Ponting", "Jacques Kallis", "Kumar Sangakkara", "Brian Lara", "Rahul Dravid", "Shane Warne", "Glenn McGrath", "Muttiah Muralitharan", "James Anderson"]
+    team_b_names = ["AB de Villiers", "Steve Smith", "Kane Williamson", "Joe Root", "Adam Gilchrist", "Ben Stokes", "Dale Steyn", "Wasim Akram", "Pat Cummins", "Anil Kumble", "Curtly Ambrose"]
+    game = Game(2, ["Arjun", "Praveen"], "Test", "Only select players who have played Test cricket")
+    game.teams["Arjun"] = [find(n) for n in team_a_names]
+    game.teams["Praveen"] = [find(n) for n in team_b_names]
+    game.all_picked = game.teams["Arjun"] + game.teams["Praveen"]
+    game_id = str(id(game))
+    games[game_id] = game
+    return jsonify({"game_id": game_id})
+
+
+@app.route("/api/venues", methods=["GET"])
+def get_venues():
+    from match_simulator import VENUES
+    return jsonify({"countries": list(VENUES.keys())})
+
+
+@app.route("/api/simulate", methods=["POST"])
+def simulate_match_endpoint():
+    from match_simulator import simulate_series_web
+    data = request.json
+    game_id = data.get("game_id")
+    num_matches = data.get("num_matches", 1)
+    venue_country = data.get("venue_country", "Worldwide")
+    game = games.get(game_id)
+    if not game:
+        return jsonify({"error": "Game not found."}), 404
+
+    if game.num_players < 2:
+        return jsonify({"error": "Need at least 2 teams to simulate."}), 400
+
+    matchups = []
+    for i in range(len(game.player_names)):
+        for j in range(i + 1, len(game.player_names)):
+            matchups.append((game.player_names[i], game.player_names[j]))
+
+    all_results = []
+    for team_a_name, team_b_name in matchups:
+        team_a = game.teams[team_a_name]
+        team_b = game.teams[team_b_name]
+        result = simulate_series_web(
+            team_a, team_b,
+            f"{team_a_name}'s XI", f"{team_b_name}'s XI",
+            venue_country, game.game_format, num_matches,
+        )
+        all_results.append({
+            "team_a": team_a_name,
+            "team_b": team_b_name,
+            **result,
+        })
+
+    return jsonify({"results": all_results})
 
 
 if __name__ == "__main__":

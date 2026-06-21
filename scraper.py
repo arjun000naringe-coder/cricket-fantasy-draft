@@ -90,6 +90,28 @@ NICKNAMES = {
     "sky": "Suryakumar Yadav", "surya": "Suryakumar Yadav",
     "hardik": "Hardik Pandya",
     "gill": "Shubman Gill",
+    "punter": "Ricky Ponting",
+    "tugga": "Steve Waugh",
+    "pup": "Michael Clarke",
+    "gaz": "Nathan Lyon",
+    "binga": "Brett Lee",
+    "huss": "Mike Hussey", "hussey": "Mike Hussey", "mr cricket": "Mike Hussey",
+    "dizzy": "Jason Gillespie",
+    "pigeon": "Glenn McGrath",
+    "haydos": "Matthew Hayden", "hayden": "Matthew Hayden",
+    "starcy": "Mitchell Starc",
+    "davey": "David Warner",
+    "maxi": "Glenn Maxwell",
+    "smithy": "Steve Smith",
+    "mitch": "Mitchell Johnson",
+    "inzy": "Inzamam-ul-Haq", "inzamam": "Inzamam-ul-Haq",
+    "akhtar": "Shoaib Akhtar", "shoaib": "Shoaib Akhtar",
+    "waqar": "Waqar Younis",
+    "kapil": "Kapil Dev",
+    "ganguly": "Sourav Ganguly", "dada": "Sourav Ganguly",
+    "zaheer": "Zaheer Khan",
+    "lee": "Brett Lee",
+    "imran": "Imran Khan",
 }
 
 
@@ -179,6 +201,7 @@ def find_player_candidates(name, players=None, max_results=3):
 
     scored = []
     input_parts = name_lower.split()
+    input_last = input_parts[-1] if input_parts else ""
 
     for p in players:
         pname = p["name"].lower()
@@ -186,16 +209,21 @@ def find_player_candidates(name, players=None, max_results=3):
         if pname == name_lower:
             return [p]
 
+        if pname.startswith(name_lower) or name_lower.startswith(pname):
+            scored.append((p, 0.95))
+            continue
+
         if name_lower in pname or pname in name_lower:
             scored.append((p, 0.90))
             continue
 
         score = 0
+        pname_parts = pname.split()
+        p_last = pname_parts[-1] if pname_parts else ""
 
         full_ratio = SequenceMatcher(None, name_lower, pname).ratio()
         score = max(score, full_ratio)
 
-        pname_parts = pname.split()
         matching_parts = 0
         for ipart in input_parts:
             best_part_score = 0
@@ -210,10 +238,38 @@ def find_player_candidates(name, players=None, max_results=3):
             score = max(score, 0.85)
 
         if score > 0.7:
+            if len(input_parts) > 1:
+                last_sim = SequenceMatcher(None, input_last, p_last).ratio()
+                first_sim = SequenceMatcher(None, input_parts[0], pname_parts[0]).ratio() if pname_parts else 0
+                if last_sim < 0.6:
+                    continue
+                if last_sim < 0.85 and first_sim < 0.6:
+                    continue
             scored.append((p, score))
 
     scored.sort(key=lambda x: -x[1])
     return [p for p, _ in scored[:max_results]]
+
+
+def _search_player_espn_api(name):
+    """Fallback: search via ESPN's autocomplete API."""
+    url = f"https://site.web.api.espn.com/apis/common/v3/sports/cricket/cricinfo/athletes?query={requests.utils.quote(name)}&limit=5"
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        if resp.status_code != 200:
+            return None, None
+        data = resp.json()
+        athletes = data.get("items", data.get("athletes", []))
+        if not athletes:
+            return None, None
+        search_lower = name.strip().lower()
+        for a in athletes:
+            a_name = (a.get("displayName") or a.get("fullName", "")).lower()
+            if search_lower in a_name or a_name in search_lower:
+                return str(a["id"]), None
+        return str(athletes[0]["id"]), None
+    except (requests.RequestException, ValueError, KeyError):
+        return None, None
 
 
 def search_player_espn(name):
@@ -234,7 +290,7 @@ def search_player_espn(name):
     except requests.RequestException:
         pass
 
-    return None, None
+    return _search_player_espn_api(name)
 
 
 def _pick_best_candidate(candidates, search_name):
@@ -244,33 +300,36 @@ def _pick_best_candidate(candidates, search_name):
     search_lower = search_name.strip().lower()
     search_parts = set(search_lower.split())
 
-    scored = []
+    all_parsed = []
     for pid, text in candidates:
-        paren = re.search(r"\(([^,]+)", text)
-        display_name = paren.group(1).strip() if paren else text.split("\n")[0].strip()
-
-        if display_name.lower() == search_lower:
-            return pid, None
-
+        before_paren = text.split("(")[0].strip()
+        if before_paren and any(c.isalpha() for c in before_paren):
+            display_name = re.sub(r"\s+", " ", before_paren).strip()
+        else:
+            paren = re.search(r"\(([^,]+)", text)
+            display_name = paren.group(1).strip() if paren else text.split("\n")[0].strip()
         name_parts = set(display_name.lower().split())
         overlap = len(search_parts & name_parts)
         name_ratio = SequenceMatcher(None, search_lower, display_name.lower()).ratio()
-        scored.append((pid, text, overlap, name_ratio))
+        all_parsed.append((pid, text, display_name, overlap, name_ratio))
 
-    scored.sort(key=lambda x: (-x[2], -x[3]))
+    all_parsed.sort(key=lambda x: (-x[3], -x[4]))
 
-    if scored and scored[0][2] >= len(search_parts):
-        return scored[0][0], None
+    if not all_parsed:
+        return candidates[0][0], None
 
-    top_overlap = scored[0][2] if scored else 0
-    tied = [s for s in scored if s[2] == top_overlap]
+    if len(all_parsed) == 1:
+        return all_parsed[0][0], None
 
-    if len(tied) <= 1:
-        return scored[0][0], None
+    top_overlap = all_parsed[0][3]
+    tied = [x for x in all_parsed if x[3] == top_overlap]
+
+    if len(tied) == 1:
+        return tied[0][0], None
 
     best_pid = None
     best_matches = -1
-    for pid, text, _, _ in tied[:4]:
+    for pid, text, _, _, _ in tied:
         stats = _fetch_statsguru_allround(pid)
         if not stats:
             continue
@@ -278,11 +337,12 @@ def _pick_best_candidate(candidates, search_name):
         if total > best_matches:
             best_matches = total
             best_pid = pid
-
+        if best_matches >= 50:
+            break
     if best_pid:
         return best_pid, None
 
-    return scored[0][0], None
+    return tied[0][0], None
 
 
 BAT_STYLE_MAP = {
@@ -466,18 +526,40 @@ def _fetch_statsguru_batting(player_id):
 
 def fetch_player_profile_espn(player_id):
     metadata = _fetch_player_metadata_espn(player_id)
-    allround = _fetch_statsguru_allround(player_id)
-
-    if not metadata or not allround:
+    if not metadata:
         return None
 
-    batting_extra = _fetch_statsguru_batting(player_id)
+    allround = _fetch_statsguru_allround(player_id)
 
-    for fmt, stats in allround.items():
-        extra = batting_extra.get(fmt, {})
-        stats["innings_bat"] = extra.get("innings_bat", 0)
-        stats["fifties"] = extra.get("fifties", 0)
-        stats.setdefault("innings_bowl", 0)
+    if not allround:
+        batting_extra = _fetch_statsguru_batting(player_id)
+        if not batting_extra:
+            return None
+        allround = {}
+        for fmt, extra in batting_extra.items():
+            allround[fmt] = {
+                "matches": 0,
+                "runs": 0,
+                "bat_avg": 0.0,
+                "hundreds": 0,
+                "highest_score": "0",
+                "wickets": 0,
+                "bowl_avg": 0.0,
+                "best_bowling": "-",
+                "five_wickets": 0,
+                "catches": 0,
+                "stumpings": 0,
+                "innings_bat": extra.get("innings_bat", 0),
+                "fifties": extra.get("fifties", 0),
+                "innings_bowl": 0,
+            }
+    else:
+        batting_extra = _fetch_statsguru_batting(player_id)
+        for fmt, stats in allround.items():
+            extra = batting_extra.get(fmt, {})
+            stats["innings_bat"] = extra.get("innings_bat", 0)
+            stats["fifties"] = extra.get("fifties", 0)
+            stats.setdefault("innings_bowl", 0)
 
     role = _determine_role(allround, metadata["bowl_style"])
 
