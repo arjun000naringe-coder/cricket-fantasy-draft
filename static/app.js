@@ -406,13 +406,52 @@ async function handleDraftInput(text) {
         };
 
         const noBtn = document.createElement("button");
-        noBtn.textContent = "No";
-        noBtn.onclick = () => {
+        noBtn.textContent = "No — search online";
+        noBtn.onclick = async () => {
             disableAllButtons();
             userMsg("No");
-            botMsg("No worries — try another name.");
-            setInputEnabled(true);
-            inputEl.focus();
+            showTyping();
+            setInputEnabled(false);
+            const resp2 = await fetch("/api/pick", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ game_id: gameId, cricketer: text, force_espn: true }),
+            });
+            const data2 = await resp2.json();
+            hideTyping();
+            if (data2.status === "confirm") {
+                const div2 = botMsg(data2.message);
+                const btns2 = document.createElement("div");
+                btns2.className = "confirm-buttons";
+                const yesBtn2 = document.createElement("button");
+                yesBtn2.className = "btn-yes";
+                yesBtn2.textContent = "Yes";
+                yesBtn2.onclick = () => {
+                    disableAllButtons();
+                    userMsg("Yes");
+                    showTyping();
+                    setInputEnabled(false);
+                    confirmPick(text, data2.candidate);
+                };
+                const noBtn2 = document.createElement("button");
+                noBtn2.textContent = "No";
+                noBtn2.onclick = () => {
+                    disableAllButtons();
+                    userMsg("No");
+                    botMsg("No worries — try another name.");
+                    setInputEnabled(true);
+                    inputEl.focus();
+                };
+                btns2.appendChild(yesBtn2);
+                btns2.appendChild(noBtn2);
+                div2.appendChild(btns2);
+            } else if (data2.status === "picked") {
+                handlePickSuccess(data2);
+            } else {
+                botMsg(data2.message || "Could not find that player online either. Try another name.");
+                setInputEnabled(true);
+                inputEl.focus();
+            }
         };
 
         btns.appendChild(yesBtn);
