@@ -7,3 +7,7 @@ __pycache__/
 # Eval outputs
 eval_results/
 *.log
+
+# Local data backups & transient pipeline artifacts (regenerable)
+data/players_backup_*.json
+*_plan.json
