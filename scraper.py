@@ -257,22 +257,29 @@ def _search_player_espn_api(name):
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code != 200:
-            return None, None
+            return None, None, ""
         data = resp.json()
         athletes = data.get("items", data.get("athletes", []))
         if not athletes:
-            return None, None
+            return None, None, ""
         search_lower = name.strip().lower()
         for a in athletes:
             a_name = (a.get("displayName") or a.get("fullName", "")).lower()
             if search_lower in a_name or a_name in search_lower:
-                return str(a["id"]), None
-        return str(athletes[0]["id"]), None
+                return str(a["id"]), None, ""
+        return str(athletes[0]["id"]), None, ""
     except (requests.RequestException, ValueError, KeyError):
-        return None, None
+        return None, None, ""
 
 
-def search_player_espn(name):
+def _clean_search_name(name):
+    """Strip honorifics and overly formal prefixes for ESPN search."""
+    cleaned = re.sub(r'^(Sir|Lord|Dr|Dame)\s+', '', name, flags=re.IGNORECASE).strip()
+    return cleaned
+
+
+def _search_espn_html(name):
+    """Search ESPN HTML and return candidates list."""
     url = f"https://search.espncricinfo.com/ci/content/player/search.html?search={requests.utils.quote(name)}"
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
@@ -284,52 +291,92 @@ def search_player_espn(name):
             if match:
                 pid = match.group(1)
                 text = link.get_text(strip=True)
-                candidates.append((pid, text))
-        if candidates:
-            return _pick_best_candidate(candidates, name)
+                country = ""
+                container = link.parent.parent if link.parent else None
+                if container:
+                    for child in container.children:
+                        if child == link.parent:
+                            break
+                        child_text = child.get_text(strip=True) if hasattr(child, "get_text") else str(child).strip()
+                        if child_text:
+                            country = child_text
+                candidates.append((pid, text, country))
+        return candidates
     except requests.RequestException:
-        pass
+        return []
 
-    return _search_player_espn_api(name)
+
+def search_player_espn(name):
+    cleaned = _clean_search_name(name)
+
+    candidates = _search_espn_html(cleaned)
+    if candidates:
+        return _pick_best_candidate(candidates, cleaned)
+
+    # If full name fails and has 3+ words, try first + last name only
+    parts = cleaned.split()
+    if len(parts) >= 3:
+        short_name = f"{parts[0]} {parts[-1]}"
+        candidates = _search_espn_html(short_name)
+        if candidates:
+            return _pick_best_candidate(candidates, cleaned)
+
+    return _search_player_espn_api(cleaned)
+
+
+def _extract_full_name(text):
+    """Extract full name from ESPN search result text like 'Markram, AK (Aiden Markram, 1994- )'."""
+    paren = re.search(r"\(([^,]+)", text)
+    if paren:
+        name = paren.group(1).strip()
+        if name and len(name) > 2 and any(c.isalpha() for c in name):
+            return name
+    before_paren = text.split("(")[0].strip()
+    if before_paren and any(c.isalpha() for c in before_paren):
+        return re.sub(r"\s+", " ", before_paren).strip()
+    return text.split("\n")[0].strip()
 
 
 def _pick_best_candidate(candidates, search_name):
     if len(candidates) == 1:
-        return candidates[0][0], None
+        full_name = _extract_full_name(candidates[0][1])
+        country = candidates[0][2] if len(candidates[0]) > 2 else ""
+        return candidates[0][0], full_name, country
 
     search_lower = search_name.strip().lower()
     search_parts = set(search_lower.split())
 
     all_parsed = []
-    for pid, text in candidates:
-        before_paren = text.split("(")[0].strip()
-        if before_paren and any(c.isalpha() for c in before_paren):
-            display_name = re.sub(r"\s+", " ", before_paren).strip()
-        else:
-            paren = re.search(r"\(([^,]+)", text)
-            display_name = paren.group(1).strip() if paren else text.split("\n")[0].strip()
+    for item in candidates:
+        pid, text = item[0], item[1]
+        country = item[2] if len(item) > 2 else ""
+        display_name = _extract_full_name(text)
         name_parts = set(display_name.lower().split())
         overlap = len(search_parts & name_parts)
         name_ratio = SequenceMatcher(None, search_lower, display_name.lower()).ratio()
-        all_parsed.append((pid, text, display_name, overlap, name_ratio))
+        all_parsed.append((pid, text, display_name, overlap, name_ratio, country))
 
     all_parsed.sort(key=lambda x: (-x[3], -x[4]))
 
     if not all_parsed:
-        return candidates[0][0], None
+        full_name = _extract_full_name(candidates[0][1])
+        country = candidates[0][2] if len(candidates[0]) > 2 else ""
+        return candidates[0][0], full_name, country
 
     if len(all_parsed) == 1:
-        return all_parsed[0][0], None
+        return all_parsed[0][0], all_parsed[0][2], all_parsed[0][5]
 
     top_overlap = all_parsed[0][3]
     tied = [x for x in all_parsed if x[3] == top_overlap]
 
     if len(tied) == 1:
-        return tied[0][0], None
+        return tied[0][0], tied[0][2], tied[0][5]
 
     best_pid = None
+    best_name = None
+    best_country = ""
     best_matches = -1
-    for pid, text, _, _, _ in tied:
+    for pid, text, display_name, _, _, country in tied:
         stats = _fetch_statsguru_allround(pid)
         if not stats:
             continue
@@ -337,12 +384,14 @@ def _pick_best_candidate(candidates, search_name):
         if total > best_matches:
             best_matches = total
             best_pid = pid
+            best_name = display_name
+            best_country = country
         if best_matches >= 50:
             break
     if best_pid:
-        return best_pid, None
+        return best_pid, best_name, best_country
 
-    return tied[0][0], None
+    return tied[0][0], tied[0][2], tied[0][5]
 
 
 BAT_STYLE_MAP = {
@@ -370,45 +419,90 @@ BOWL_STYLE_MAP = {
 }
 
 
-def _fetch_player_metadata_espn(player_id):
+_MAJOR_TEAMS = [
+    "Australia", "Bangladesh", "England", "India", "Ireland",
+    "New Zealand", "Pakistan", "South Africa", "Sri Lanka",
+    "West Indies", "Zimbabwe", "Afghanistan",
+]
+
+
+def _infer_country_from_opponents(player_id):
+    """Infer a player's country by finding which major team they never played against."""
+    url = f"https://stats.espncricinfo.com/ci/engine/player/{player_id}.html?class=11;template=results;type=allround"
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        if resp.status_code != 200:
+            return "Unknown"
+        soup = BeautifulSoup(resp.text, "html.parser")
+    except requests.RequestException:
+        return "Unknown"
+
+    opponents = set()
+    for table in soup.find_all("table", class_="engineTable"):
+        for row in table.find_all("tr"):
+            first_cell = row.find("td")
+            if first_cell:
+                text = first_cell.get_text(strip=True)
+                if text.startswith("v "):
+                    opponents.add(text[2:].strip())
+
+    missing = [t for t in _MAJOR_TEAMS if t not in opponents]
+    if len(missing) == 1:
+        return missing[0]
+    return "Unknown"
+
+
+def _fetch_player_metadata_espn(player_id, search_full_name=None, search_country=None):
     url = f"https://site.web.api.espn.com/apis/common/v3/sports/cricket/cricinfo/athletes/{player_id}"
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
-        if resp.status_code != 200:
-            return None
-        data = resp.json()
+        if resp.status_code == 200:
+            data = resp.json()
+            athlete = data.get("athlete", {})
+            if athlete:
+                # Prefer ESPN's shortName (clean common form, e.g. 'Viv Richards')
+                # over the long formal displayName/fullName — keeps stored names
+                # consistent with what users type and what dedup looks up.
+                name = athlete.get("shortName") or athlete.get("displayName") or athlete.get("fullName", "")
+
+                bat_hand = "Unknown"
+                for bs in athlete.get("batStyle", []):
+                    desc = bs.get("description", "").lower()
+                    bat_hand = BAT_STYLE_MAP.get(desc, bat_hand)
+                    if bat_hand != "Unknown":
+                        break
+
+                bowl_style_str = "N/A"
+                for bw in athlete.get("bowlStyle", []):
+                    desc = bw.get("description", "")
+                    bowl_style_str = BOWL_STYLE_MAP.get(desc.lower(), desc)
+                    break
+
+                country = "Unknown"
+                team = athlete.get("team", {})
+                if team.get("displayName"):
+                    country = team["displayName"]
+
+                return {
+                    "name": name,
+                    "country": country,
+                    "bat_hand": bat_hand,
+                    "bowl_style": bowl_style_str,
+                    "_from_api": True,
+                }
     except (requests.RequestException, ValueError):
+        pass
+
+    # Fallback: use search_full_name + country from HTML search
+    if not search_full_name:
         return None
-
-    athlete = data.get("athlete", {})
-    if not athlete:
-        return None
-
-    name = athlete.get("displayName") or athlete.get("fullName", "")
-
-    bat_hand = "Unknown"
-    for bs in athlete.get("batStyle", []):
-        desc = bs.get("description", "").lower()
-        bat_hand = BAT_STYLE_MAP.get(desc, bat_hand)
-        if bat_hand != "Unknown":
-            break
-
-    bowl_style_str = "N/A"
-    for bw in athlete.get("bowlStyle", []):
-        desc = bw.get("description", "")
-        bowl_style_str = BOWL_STYLE_MAP.get(desc.lower(), desc)
-        break
-
-    country = "Unknown"
-    team = athlete.get("team", {})
-    if team.get("displayName"):
-        country = team["displayName"]
-
+    country = search_country or _infer_country_from_opponents(player_id)
     return {
-        "name": name,
+        "name": search_full_name,
         "country": country,
-        "bat_hand": bat_hand,
-        "bowl_style": bowl_style_str,
+        "bat_hand": "Unknown",
+        "bowl_style": "N/A",
+        "_from_api": False,
     }
 
 
@@ -524,8 +618,8 @@ def _fetch_statsguru_batting(player_id):
     return {}
 
 
-def fetch_player_profile_espn(player_id):
-    metadata = _fetch_player_metadata_espn(player_id)
+def fetch_player_profile_espn(player_id, search_full_name=None, search_country=None):
+    metadata = _fetch_player_metadata_espn(player_id, search_full_name=search_full_name, search_country=search_country)
     if not metadata:
         return None
 
@@ -570,6 +664,7 @@ def fetch_player_profile_espn(player_id):
         "bat_hand": metadata["bat_hand"],
         "bowl_style": metadata["bowl_style"],
         "formats": allround,
+        "_from_api": metadata.get("_from_api", False),
     }
 
 
@@ -591,41 +686,83 @@ def _determine_role(formats, bowl_style):
     return "All-rounder"
 
 
+def _is_metadata_partial(player):
+    """Check if a player record was scraped from an unreliable source."""
+    return bool(player.get("partial_metadata"))
+
+
+def _find_by_espn_id(espn_id, players):
+    """Find a player by ESPN ID — the stable dedup key."""
+    for p in players:
+        if p.get("espn_id") == espn_id:
+            return p
+    return None
+
+
+def _update_metadata(existing, profile):
+    """Update a player's metadata fields from a fresh profile."""
+    changed = False
+    for fmt, stats in profile["formats"].items():
+        if fmt not in existing.get("formats", {}):
+            existing.setdefault("formats", {})[fmt] = stats
+            changed = True
+        else:
+            existing["formats"][fmt] = stats
+            changed = True
+    for field in ("country", "bat_hand", "role"):
+        if existing.get(field) in ("Unknown", None) and profile.get(field) not in ("Unknown", None):
+            existing[field] = profile[field]
+            changed = True
+    if existing.get("bowl_style") in ("Unknown",) and profile.get("bowl_style") not in ("Unknown",):
+        existing["bowl_style"] = profile["bowl_style"]
+        changed = True
+    if not existing.get("espn_id") and profile.get("espn_id"):
+        existing["espn_id"] = profile["espn_id"]
+        changed = True
+    return changed
+
+
 def scrape_and_cache(name, game_format):
     players = load_players()
+
+    # Check by name first
     existing = _find_player_local_strict(name, players)
-    if existing and game_format in existing.get("formats", {}):
+    if existing and game_format in existing.get("formats", {}) and not _is_metadata_partial(existing):
         return existing
 
-    player_id, full_name = search_player_espn(name)
+    player_id, full_name, search_country = search_player_espn(name)
     if not player_id:
         return None
 
-    profile = fetch_player_profile_espn(player_id)
+    # Also check by ESPN ID to prevent duplicates
+    id_match = _find_by_espn_id(player_id, players)
+    if id_match and not existing:
+        existing = id_match
+    if existing and game_format in existing.get("formats", {}) and not _is_metadata_partial(existing):
+        return existing
+
+    profile = fetch_player_profile_espn(player_id, search_full_name=full_name or name, search_country=search_country)
     if not profile:
         return None
 
     if game_format not in profile.get("formats", {}):
         return None
 
+    profile["espn_id"] = player_id
+    from_api = profile.pop("_from_api", False)
+    is_partial = not from_api
+
     if existing:
-        for fmt, stats in profile["formats"].items():
-            if fmt not in existing.get("formats", {}):
-                existing.setdefault("formats", {})[fmt] = stats
-            else:
-                existing["formats"][fmt] = stats
-        if existing.get("country") == "Unknown":
-            existing["country"] = profile["country"]
-        if existing.get("bat_hand") == "Unknown":
-            existing["bat_hand"] = profile["bat_hand"]
-        if existing.get("role") == "Unknown":
-            existing["role"] = profile["role"]
-        if existing.get("bowl_style") in ("Unknown", "N/A") and profile["bowl_style"] not in ("Unknown", "N/A"):
-            existing["bowl_style"] = profile["bowl_style"]
+        _update_metadata(existing, profile)
+        if from_api and existing.get("partial_metadata"):
+            del existing["partial_metadata"]
+        elif is_partial and not existing.get("partial_metadata"):
+            existing["partial_metadata"] = True
         save_players(players)
         return existing
 
     new_player = {
+        "espn_id": player_id,
         "name": profile["name"],
         "country": profile["country"],
         "role": profile["role"],
@@ -633,6 +770,8 @@ def scrape_and_cache(name, game_format):
         "bowl_style": profile["bowl_style"],
         "formats": profile["formats"],
     }
+    if is_partial:
+        new_player["partial_metadata"] = True
     players.append(new_player)
     save_players(players)
     return new_player
