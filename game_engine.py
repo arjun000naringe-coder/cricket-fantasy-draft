@@ -29,6 +29,7 @@ class Game:
         self.teams = {name: [] for name in player_names}
         self.current_turn_index = 0
         self.all_picked = []
+        self.hinted_players = []
         self.players_db = load_players()
 
     @property
@@ -175,9 +176,13 @@ class Game:
         return True, f"{player_data['name']} added to {prev_player}'s team!", None
 
     def get_hint(self):
-        return generate_hint(
-            self.constraint, self.all_picked, self.game_format
+        clue, player = generate_hint(
+            self.constraint, self.all_picked, self.game_format,
+            players_db=self.players_db, already_hinted=self.hinted_players,
         )
+        if player:
+            self.hinted_players.append(player)
+        return clue
 
     def get_team_summary(self, player_name):
         team = self.teams[player_name]

@@ -1,6 +1,14 @@
 import json
+import random
 import re
 from llm_client import chat
+
+# Hints use the same fast, reliable model as match simulation.
+HINT_MODEL = "gemma4:31b"
+
+# Name particles that aren't identifying on their own, so they don't count
+# as a "leak" if they appear in a clue.
+_NAME_STOPWORDS = {"de", "van", "der", "al", "ul", "bin", "del", "da", "di", "le", "la"}
 
 
 def generate_prompt(game_format):
@@ -102,7 +110,6 @@ Reply with exactly one of:
 
 
 def _extract_final_answer(text):
-    import re
     quoted = re.findall(r'"([^"]{15,})"', text)
     if quoted:
         return quoted[-1]
@@ -114,23 +121,147 @@ def _extract_final_answer(text):
     return text.strip().strip('"')[:200]
 
 
-def generate_hint(constraint, picked_players, game_format):
-    picked_names = [p["name"] for p in picked_players]
+# Phrases that signal the model "thinking out loud" instead of giving a clue.
+_REASONING_TELLS = (
+    "let me", "i like", "i'll", "i will", "finalize", "let's", "here's",
+    "here is", "option", "constraint:", "player:", "clue:", "hint:", "okay",
+    "sure,", "as an", "i think", "i need", "first,",
+)
 
+
+def _looks_like_reasoning(clue):
+    low = clue.lower()
+    return any(t in low for t in _REASONING_TELLS)
+
+
+def _name_tokens(name):
+    """Identifying tokens of a name (drops initials and particles like 'de')."""
+    toks = re.sub(r"[^a-z ]", " ", name.lower()).split()
+    return [t for t in toks if len(t) > 2 and t not in _NAME_STOPWORDS]
+
+
+def _clue_leaks_name(clue, name):
+    low = clue.lower()
+    return any(re.search(rf"\b{re.escape(t)}\b", low) for t in _name_tokens(name))
+
+
+def _candidate_line(p, game_format):
+    fmt = p.get("formats", {}).get(game_format, {})
+    bits = [f"{fmt.get('matches', 0)}m", f"{fmt.get('runs', 0)}r"]
+    if fmt.get("bat_avg"):
+        bits.append(f"avg{fmt['bat_avg']}")
+    if fmt.get("wickets"):
+        bits.append(f"{fmt['wickets']}w")
+    if fmt.get("hundreds"):
+        bits.append(f"{fmt['hundreds']}x100")
+    return f"{p['name']} ({p.get('country', '?')}, {p.get('role', '?')}) — {' '.join(bits)}"
+
+
+def _fallback_hint(candidates, game_format):
+    """Instant, no-LLM safe clue grounded in a real in-pool player."""
+    p = random.choice(candidates)
+    role = (p.get("role") or "cricketer").lower()
+    country = p.get("country") or "the international stage"
+    article = "an" if role[:1] in "aeiou" else "a"
+    return (f"Think of {article} {role} from {country} who made their mark in {game_format} cricket.",
+            p["name"])
+
+
+def generate_hint(constraint, picked_players, game_format, players_db=None,
+                  already_hinted=None):
+    """Return (clue, player_name).
+
+    One gemma call, grounded in real players from our DB so the hint always
+    points to someone the user can actually pick. We ask the model to reveal
+    its chosen player on a hidden line so we can (a) prevent repeats across a
+    session and (b) deterministically reject clues that leak the name — both
+    with zero extra latency.
+    """
+    picked_names = {p["name"].lower() for p in picked_players}
+    hinted_names = {n.lower() for n in (already_hinted or [])}
+    avoid = picked_names | hinted_names
+
+    # Candidate pool: players with stats in this format, not already used.
+    pool = [
+        p for p in (players_db or [])
+        if game_format in p.get("formats", {})
+        and p["name"].lower() not in avoid
+    ]
+    if not pool:
+        # Degenerate case (no DB / everyone used): fall back to old behaviour.
+        return _legacy_hint(constraint, picked_players, game_format), None
+
+    sample = random.sample(pool, min(45, len(pool)))
+    by_name = {p["name"].lower(): p for p in sample}
+    listing = "\n".join(_candidate_line(p, game_format) for p in sample)
+
+    user_msg = f"""From the player list below, secretly pick ONE player who clearly satisfies the constraint, then write a single playful one-sentence clue pointing to them.
+
+Format: {game_format}
+Constraint: {constraint}
+
+Players (choose ONLY from this list):
+{listing}
+
+Rules for the clue:
+- Exactly ONE sentence, fun and evocative.
+- Do NOT write the player's name or surname.
+- Do NOT use a unique nickname, signature celebration, or one-of-a-kind stat that instantly gives them away (no "Haryana Hurricane", "helicopter shot", "sword celebration", exact wicket/run totals).
+- Hint through general traits: country, role, playing style, era.
+
+Output EXACTLY two lines and nothing else:
+PLAYER: <exact name copied from the list>
+CLUE: <the one-sentence clue>"""
+
+    for _ in range(2):  # one retry on a bad/leaky/invalid response
+        result = chat(
+            messages=[{"role": "user", "content": user_msg}],
+            system="You are a cricket fantasy game host. Follow the output format exactly. Never add commentary or reasoning.",
+            max_tokens=120,
+            model=HINT_MODEL,
+        )
+        player, clue = _parse_player_clue(result)
+        if not clue or _looks_like_reasoning(clue):
+            continue
+        chosen = by_name.get((player or "").lower())
+        if not chosen:
+            continue  # picked someone outside the list — reject
+        if _clue_leaks_name(clue, chosen["name"]):
+            continue  # name leaked — reject and retry
+        return clue, chosen["name"]
+
+    # All attempts failed validation — return a safe grounded fallback.
+    return _fallback_hint(sample, game_format)
+
+
+def _parse_player_clue(text):
+    player, clue = None, None
+    for line in text.strip().splitlines():
+        line = line.strip().strip('"').strip("*").strip()
+        m = re.match(r"(?i)^player\s*[:\-]\s*(.+)$", line)
+        if m:
+            player = m.group(1).strip().strip('"')
+            continue
+        m = re.match(r"(?i)^clue\s*[:\-]\s*(.+)$", line)
+        if m:
+            clue = m.group(1).strip().strip('"')
+    return player, clue
+
+
+def _legacy_hint(constraint, picked_players, game_format):
+    picked_names = [p["name"] for p in picked_players]
     result = chat(
-        messages=[
-            {
-                "role": "user",
-                "content": f"""Give a hint for a {game_format} player who fits this constraint:
+        messages=[{
+            "role": "user",
+            "content": f"""Give a hint for a {game_format} player who fits this constraint:
 "{constraint}"
 
 These players are already picked (don't hint at them): {', '.join(picked_names) if picked_names else 'None yet'}
 
-Give ONE short, fun clue. Example: "Think of a Sri Lankan spinner who bamboozled batsmen for two decades"
-Do NOT name the player. Reply with ONLY the clue, nothing else.""",
-            }
-        ],
+Give ONE short, fun clue. Do NOT name the player. Reply with ONLY the clue, nothing else.""",
+        }],
         system="You are a cricket fantasy game host. Give ONLY a one-sentence hint, no explanation or reasoning.",
-        max_tokens=150,
+        max_tokens=120,
+        model=HINT_MODEL,
     )
     return _extract_final_answer(result)
