@@ -327,11 +327,9 @@ async function handlePickSuccess(data) {
     if (data.commentary) await commentaryMsg(data.commentary);
 
     if (data.draft_complete) {
-        await botMsgTyped("🏆 <b>Draft complete!</b>\n\nType <b>my team</b> to see your final squad.");
-        if (numPlayers >= 2) {
-            showSimulationSetup();
-        }
+        await botMsgTyped("🏆 <b>Draft complete!</b>");
         state = "complete";
+        showPostDraftOptions();
     } else {
         let turnMsg = `<span class="pick-counter">Pick ${data.next_pick} of 11</span>`;
         if (numPlayers > 1) {
@@ -767,8 +765,97 @@ async function simulateMatch() {
         }
     }
 
-    botMsg("\nType <b>my team</b> to review your squads, or <b>simulate</b> to play again.");
+    showPostSimOptions();
+}
+
+function showPostDraftOptions() {
+    const div = botMsg("What next?");
+    const opts = document.createElement("div");
+    opts.className = "setup-options";
+
+    if (numPlayers >= 2) {
+        const simBtn = document.createElement("button");
+        simBtn.textContent = "Simulate match";
+        simBtn.onclick = () => {
+            disableAllButtons();
+            userMsg("Simulate match");
+            showSimulationSetup();
+        };
+        opts.appendChild(simBtn);
+    }
+
+    const teamBtn = document.createElement("button");
+    teamBtn.textContent = "My team";
+    teamBtn.onclick = () => {
+        disableAllButtons();
+        userMsg("My team");
+        showTeam().then(() => showPostDraftOptions());
+    };
+    opts.appendChild(teamBtn);
+
+    const newBtn = document.createElement("button");
+    newBtn.textContent = "Start new game";
+    newBtn.onclick = () => {
+        disableAllButtons();
+        userMsg("Start new game");
+        resetGame();
+    };
+    opts.appendChild(newBtn);
+
+    div.appendChild(opts);
+}
+
+function showPostSimOptions() {
+    const div = botMsg("What next?");
+    const opts = document.createElement("div");
+    opts.className = "setup-options";
+
+    const simBtn = document.createElement("button");
+    simBtn.textContent = "Simulate again";
+    simBtn.onclick = () => {
+        disableAllButtons();
+        userMsg("Simulate again");
+        showSimulationSetup();
+    };
+    opts.appendChild(simBtn);
+
+    const teamBtn = document.createElement("button");
+    teamBtn.textContent = "My team";
+    teamBtn.onclick = () => {
+        disableAllButtons();
+        userMsg("My team");
+        showTeam().then(() => showPostSimOptions());
+    };
+    opts.appendChild(teamBtn);
+
+    const newBtn = document.createElement("button");
+    newBtn.textContent = "Start new game";
+    newBtn.onclick = () => {
+        disableAllButtons();
+        userMsg("Start new game");
+        resetGame();
+    };
+    opts.appendChild(newBtn);
+
+    div.appendChild(opts);
     setInputEnabled(true);
+}
+
+function resetGame() {
+    gameId = null;
+    numPlayers = 1;
+    playerNames = [];
+    currentNamingIndex = 0;
+    gameFormat = "";
+    constraint = "";
+    pickCount = 0;
+    pendingConfirm = null;
+    currentTurnPlayer = "";
+    simNumMatches = 1;
+    simVenueCountry = "";
+    messagesEl.innerHTML = "";
+    state = "ask_num_players";
+    startSetup();
 }
 
 // --- Input handling ---
