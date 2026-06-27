@@ -118,7 +118,13 @@ function setInputEnabled(enabled) {
 function botMsg(text) { return addMsg(text, "msg-bot"); }
 function botMsgTyped(text) { return queueTyped(text, "msg-bot", 8); }
 function userMsg(text) { addMsg(text, "msg-user"); }
-function statsMsg(text) { return queueTyped(text, "msg-stats", 5); }
+function statsMsg(html) {
+    const div = document.createElement("div");
+    div.className = "msg msg-stats";
+    div.innerHTML = html;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+}
 function commentaryMsg(text) { return queueTyped(text, "msg-commentary", 10); }
 
 // --- Setup flow ---

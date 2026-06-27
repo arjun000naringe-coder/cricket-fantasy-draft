@@ -139,6 +139,16 @@ header h1 {
     margin-left: 2px;
 }
 
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 2px 16px;
+}
+
+.stats-grid .stat-item {
+    white-space: nowrap;
+}
+
 .msg-commentary {
     color: #aa9944;
     align-self: flex-start;
@@ -431,5 +441,77 @@ header h1 {
 @media (max-width: 840px) {
     .app {
         border: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat {
+        padding: 12px 12px;
+    }
+
+    .input-area {
+        padding: 8px 8px;
+    }
+
+    #user-input {
+        font-size: 16px;
+        padding: 10px 8px;
+        min-width: 0;
+    }
+
+    #send-btn {
+        font-size: 13px;
+        padding: 10px 10px;
+        letter-spacing: 0;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .msg {
+        font-size: 15px;
+    }
+
+    .msg-stats {
+        font-size: 14px;
+        padding: 6px 0 6px 12px;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .msg-commentary {
+        font-size: 14px;
+    }
+
+    .msg .confirm-buttons button {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .msg .candidate-btn {
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+
+    .setup-options button {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .msg-team .player-name {
+        font-size: 14px;
+    }
+
+    .msg-team .player-stat {
+        width: 55px;
+        font-size: 13px;
+    }
+
+    .msg-team .team-row.team-col-header {
+        font-size: 12px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2px 10px;
     }
 }

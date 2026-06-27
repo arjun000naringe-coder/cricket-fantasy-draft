@@ -17,19 +17,29 @@ def _format_stats_card(player, game_format):
         return None
 
     role = player.get("role", "Unknown")
-    lines = []
+    items = []
 
     if role in ("Batsman", "Wicket-keeper", "All-rounder"):
-        lines.append(f"🏏 {fmt.get('matches', '?')} matches · {fmt.get('runs', '?')} runs · avg {fmt.get('bat_avg', '?')} · {fmt.get('hundreds', '?')} 100s · {fmt.get('fifties', '?')} 50s · HS {fmt.get('highest_score', '?')}")
+        items.append(f"Mat: {fmt.get('matches', '?')}")
+        items.append(f"Runs: {fmt.get('runs', '?')}")
+        items.append(f"Avg: {fmt.get('bat_avg', '?')}")
+        items.append(f"HS: {fmt.get('highest_score', '?')}")
+        items.append(f"100s: {fmt.get('hundreds', '?')}")
+        items.append(f"50s: {fmt.get('fifties', '?')}")
 
     if role in ("Bowler", "All-rounder"):
-        lines.append(f"⚾ {fmt.get('wickets', '?')} wickets · avg {fmt.get('bowl_avg', '?')} · best {fmt.get('best_bowling', '?')} · {fmt.get('five_wickets', '?')} × 5W")
+        items.append(f"Wkts: {fmt.get('wickets', '?')}")
+        items.append(f"BowlAvg: {fmt.get('bowl_avg', '?')}")
+        items.append(f"Best: {fmt.get('best_bowling', '?')}")
+        items.append(f"5W: {fmt.get('five_wickets', '?')}")
 
-    if role == "Bowler" and not any("runs" in l for l in lines):
+    if role == "Bowler" and not any("Runs" in i for i in items):
         if fmt.get("runs", 0):
-            lines.append(f"🏏 {fmt.get('runs', '?')} runs · avg {fmt.get('bat_avg', '?')}")
+            items.append(f"Runs: {fmt.get('runs', '?')}")
+            items.append(f"Avg: {fmt.get('bat_avg', '?')}")
 
-    return "\n".join(lines)
+    stat_spans = "".join(f'<span class="stat-item">{item}</span>' for item in items)
+    return f'<div class="stats-grid">{stat_spans}</div>'
 
 
 def _extract_commentary(text):
