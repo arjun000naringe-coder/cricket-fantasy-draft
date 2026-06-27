@@ -374,6 +374,11 @@ async function handleDraftInput(text) {
         return;
     }
 
+    if (pickCount > 0) {
+        const sep = document.createElement("div");
+        sep.className = "pick-separator";
+        messagesEl.appendChild(sep);
+    }
     userMsg(text);
     showTyping();
     setInputEnabled(false);
