@@ -12,6 +12,7 @@ let constraint = "";
 let pickCount = 0;
 let pendingConfirm = null;
 let currentTurnPlayer = "";
+let currentTurnIndex = 0;
 
 let typeQueue = Promise.resolve();
 
@@ -120,9 +121,26 @@ function setInputEnabled(enabled) {
     }
 }
 
+function getPlayerIndex(name) {
+    const idx = playerNames.indexOf(name);
+    return idx >= 0 ? idx : 0;
+}
+
+function showTurnBanner(playerName, pickNum) {
+    const idx = getPlayerIndex(playerName);
+    const div = document.createElement("div");
+    div.className = `turn-banner player-${idx}`;
+    div.textContent = `${playerName}'s turn — Pick ${pickNum} of 11`;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+}
+
 function botMsg(text) { return addMsg(text, "msg-bot"); }
 function botMsgTyped(text) { return queueTyped(text, "msg-bot", 8); }
-function userMsg(text) { addMsg(text, "msg-user"); }
+function userMsg(text, playerIdx) {
+    const cls = playerIdx !== undefined ? `msg-user player-${playerIdx}` : "msg-user";
+    addMsg(text, cls);
+}
 function statsMsg(html) {
     const div = document.createElement("div");
     div.className = "msg msg-stats";
@@ -309,15 +327,18 @@ async function startDraft(c) {
 
     gameId = data.game_id;
     currentTurnPlayer = data.current_turn;
+    currentTurnIndex = getPlayerIndex(currentTurnPlayer);
     pickCount = 0;
     state = "drafting";
 
     let startMsg = `<b>Draft started!</b> — ${gameFormat}\n\n<b>Constraint:</b> "${constraint}"\n\nPick your 11 players. Type a cricketer's name.\n`;
-    if (numPlayers > 1) {
-        startMsg += `\n<b>${currentTurnPlayer}</b>, you're up first.\n`;
-    }
-    startMsg += `<span class="pick-counter">Pick 1 of 11</span>\n\nType <b>hint</b> for a clue · <b>my team</b> to see your squad`;
+    startMsg += `\nType <b>hint</b> for a clue · <b>my team</b> to see your squad`;
     botMsg(startMsg);
+    if (numPlayers > 1) {
+        showTurnBanner(currentTurnPlayer, 1);
+    } else {
+        addMsg(`<span class="pick-counter">Pick 1 of 11</span>`, "msg-bot");
+    }
     setInputEnabled(true);
     inputEl.placeholder = numPlayers > 1 ? `${currentTurnPlayer}'s pick...` : "pick a cricketer...";
 }
@@ -327,6 +348,7 @@ async function startDraft(c) {
 async function handlePickSuccess(data) {
     pickCount = data.pick_number;
     currentTurnPlayer = data.current_turn || "";
+    currentTurnIndex = getPlayerIndex(currentTurnPlayer);
     const p = data.player;
 
     if (data.stats) statsMsg(data.stats);
@@ -337,11 +359,11 @@ async function handlePickSuccess(data) {
         state = "complete";
         showPostDraftOptions();
     } else {
-        let turnMsg = `<span class="pick-counter">Pick ${data.next_pick} of 11</span>`;
         if (numPlayers > 1) {
-            turnMsg = `<b>${currentTurnPlayer}</b>'s turn — ` + turnMsg;
+            showTurnBanner(currentTurnPlayer, data.next_pick);
+        } else {
+            addMsg(`<span class="pick-counter">Pick ${data.next_pick} of 11</span>`, "msg-bot");
         }
-        addMsg(turnMsg, "msg-bot");
         inputEl.placeholder = numPlayers > 1 ? `${currentTurnPlayer}'s pick...` : "pick a cricketer...";
     }
     setInputEnabled(true);
@@ -383,7 +405,7 @@ async function handleDraftInput(text) {
         sep.className = "pick-separator";
         messagesEl.appendChild(sep);
     }
-    userMsg(text);
+    userMsg(text, numPlayers > 1 ? currentTurnIndex : undefined);
     showTyping();
     setInputEnabled(false);
 
@@ -414,7 +436,7 @@ async function handleDraftInput(text) {
         yesBtn.textContent = "Yes";
         yesBtn.onclick = () => {
             disableAllButtons();
-            userMsg("Yes");
+            userMsg("Yes", numPlayers > 1 ? currentTurnIndex : undefined);
             showTyping();
             setInputEnabled(false);
             confirmPick(text, data.candidate);
@@ -424,7 +446,7 @@ async function handleDraftInput(text) {
         noBtn.textContent = "No, search ESPN";
         noBtn.onclick = async () => {
             disableAllButtons();
-            userMsg("No");
+            userMsg("No", numPlayers > 1 ? currentTurnIndex : undefined);
             showTyping();
             setInputEnabled(false);
             const resp2 = await fetch("/api/pick", {
@@ -443,7 +465,7 @@ async function handleDraftInput(text) {
                 yesBtn2.textContent = "Yes";
                 yesBtn2.onclick = () => {
                     disableAllButtons();
-                    userMsg("Yes");
+                    userMsg("Yes", numPlayers > 1 ? currentTurnIndex : undefined);
                     showTyping();
                     setInputEnabled(false);
                     confirmPick(text, data2.candidate);
@@ -452,7 +474,7 @@ async function handleDraftInput(text) {
                 noBtn2.textContent = "No";
                 noBtn2.onclick = () => {
                     disableAllButtons();
-                    userMsg("No");
+                    userMsg("No", numPlayers > 1 ? currentTurnIndex : undefined);
                     botMsg("No worries — try another name.");
                     setInputEnabled(true);
                     inputEl.focus();
@@ -483,7 +505,7 @@ async function handleDraftInput(text) {
             btn.innerHTML = `<span class="cand-name">${c.name}</span> <span class="cand-info">— ${c.country}, ${c.role}</span>`;
             btn.onclick = () => {
                 disableAllButtons();
-                userMsg(c.name);
+                userMsg(c.name, numPlayers > 1 ? currentTurnIndex : undefined);
                 showTyping();
                 setInputEnabled(false);
                 confirmPick(text, c.name);
@@ -496,7 +518,7 @@ async function handleDraftInput(text) {
         noneBtn.textContent = "None of these — search online";
         noneBtn.onclick = async () => {
             disableAllButtons();
-            userMsg("None of these");
+            userMsg("None of these", numPlayers > 1 ? currentTurnIndex : undefined);
             showTyping();
             setInputEnabled(false);
             const resp2 = await fetch("/api/pick", {
@@ -517,7 +539,7 @@ async function handleDraftInput(text) {
                 yesBtn2.textContent = "Yes";
                 yesBtn2.onclick = () => {
                     disableAllButtons();
-                    userMsg("Yes");
+                    userMsg("Yes", numPlayers > 1 ? currentTurnIndex : undefined);
                     showTyping();
                     setInputEnabled(false);
                     confirmPick(text, data2.candidate);
@@ -526,7 +548,7 @@ async function handleDraftInput(text) {
                 noBtn2.textContent = "No";
                 noBtn2.onclick = () => {
                     disableAllButtons();
-                    userMsg("No");
+                    userMsg("No", numPlayers > 1 ? currentTurnIndex : undefined);
                     botMsg("No worries — try another name.");
                     setInputEnabled(true);
                 };
@@ -667,11 +689,11 @@ async function showTeam() {
         }
     }
     if (state === "drafting") {
-        let turnMsg = `<span class="pick-counter">Pick ${data.next_pick || "?"} of 11</span>`;
         if (numPlayers > 1) {
-            turnMsg = `<b>${currentTurnPlayer}</b>'s turn — ` + turnMsg;
+            showTurnBanner(currentTurnPlayer, data.next_pick || "?");
+        } else {
+            addMsg(`<span class="pick-counter">Pick ${data.next_pick || "?"} of 11</span>`, "msg-bot");
         }
-        addMsg(turnMsg, "msg-bot");
     }
     setInputEnabled(true);
 }
@@ -1011,6 +1033,7 @@ function resetGame() {
     pickCount = 0;
     pendingConfirm = null;
     currentTurnPlayer = "";
+    currentTurnIndex = 0;
     simNumMatches = 1;
     simVenueCountry = "";
     messagesEl.innerHTML = "";

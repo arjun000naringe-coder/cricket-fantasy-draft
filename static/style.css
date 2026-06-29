@@ -96,8 +96,59 @@ header h1 {
 }
 
 .msg-user::before {
-    content: '$ ';
+    content: '→ ';
     color: #d29922;
+}
+
+/* Player colors (up to 4 players) */
+
+.msg-user.player-0 { color: #ffa657; }
+.msg-user.player-0::before { color: #d29922; }
+
+.msg-user.player-1 { color: #58a6ff; }
+.msg-user.player-1::before { color: #1f6feb; }
+
+.msg-user.player-2 { color: #d2a8ff; }
+.msg-user.player-2::before { color: #8b5cf6; }
+
+.msg-user.player-3 { color: #5eead4; }
+.msg-user.player-3::before { color: #2dd4bf; }
+
+/* Turn banner */
+
+.turn-banner {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin: 8px 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.turn-banner.player-0 {
+    background: #2a1f00;
+    border: 1px solid #d29922;
+    color: #ffa657;
+}
+
+.turn-banner.player-1 {
+    background: #001d33;
+    border: 1px solid #1f6feb;
+    color: #58a6ff;
+}
+
+.turn-banner.player-2 {
+    background: #1a0d33;
+    border: 1px solid #8b5cf6;
+    color: #d2a8ff;
+}
+
+.turn-banner.player-3 {
+    background: #002a2a;
+    border: 1px solid #2dd4bf;
+    color: #5eead4;
 }
 
 /* --- Player stats card --- */
