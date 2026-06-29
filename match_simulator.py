@@ -1,5 +1,8 @@
 import random
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from llm_client import chat, HEAVY_MODEL
+import cricket_engine as engine
 
 SIM_MODEL = "gemma4:31b"
 
@@ -282,239 +285,209 @@ def _clean_for_web(text):
     return text.strip()
 
 
-def _simulate_limited_overs_web(team1, team2, team1_name, team2_name, venue, game_format, match_number=None):
-    match_label = f"Match {match_number}" if match_number else "Match"
-    overs = "50" if game_format == "ODI" else "20"
-    fmt_long = "One Day International (50 overs per side)" if game_format == "ODI" else "T20 International (20 overs per side)"
-    teams_block = _teams_block(team1, team2, team1_name, team2_name, game_format)
+# ===========================================================================
+# Engine-driven narration (authoritative engine decides; LLM only narrates)
+# ===========================================================================
 
-    prompt_1 = f"""Simulate the toss and FIRST INNINGS ONLY of a {fmt_long} cricket match.
+def _render_bat_top(inn, n=3):
+    rows = sorted(inn["batting"], key=lambda b: b["runs"], reverse=True)[:n]
+    return ", ".join(f"{b['name']} {b['runs']}{'' if b['out'] else '*'} ({b['balls']})" for b in rows)
 
-{match_label} at {venue}
-Conditions: Consider the typical pitch and weather conditions at this ground.
 
-{teams_block}
+def _render_bowl_top(inn, n=2):
+    rows = [b for b in inn["bowling"] if b["wickets"] > 0][:n]
+    if not rows:
+        rows = inn["bowling"][:1]
+    return ", ".join(f"{b['name']} {b['wickets']}/{b['runs']} ({b['overs']} ov)" for b in rows)
 
-Simulate realistically based on career statistics with natural variance.
 
-Provide ONLY the toss and first innings in this EXACT format:
+def _match_summary_text(m):
+    txt = f"RESULT: {m['result_text']}"
+    if m.get("potm"):
+        txt += f"\nPLAYER OF THE MATCH: {m['potm']['name']} ({m['potm']['reason']})"
+    return txt
 
-TOSS: <team> won the toss and elected to <bat/bowl>
 
-FIRST INNINGS: <team name> — <total>/<wickets> in <overs> overs
-Top scorers:
-- <Player>: <runs> (<balls>) [<4s> fours, <6s> sixes]
-- <Player>: <runs> (<balls>) [<4s> fours, <6s> sixes]
-Key bowlers:
-- <Player>: <wickets>/<runs> (<overs> overs)
-- <Player>: <wickets>/<runs> (<overs> overs)
-
-INNINGS NARRATIVE:
-<1 paragraph describing the key moments of the first innings>
-
-Do NOT simulate the second innings yet. Do not use markdown formatting."""
-
-    first_innings = chat(
-        messages=[{"role": "user", "content": prompt_1}],
-        system=SYSTEM_PROMPT,
-        max_tokens=800,
-        model=SIM_MODEL,
-    )
-
-    prompt_2 = f"""Continue the match. Here is what happened in the first innings:
-
-{first_innings}
-
-Now simulate the SECOND INNINGS and provide the match result.
-
-{teams_block}
-
-Provide the second innings and result in this EXACT format:
-
-SECOND INNINGS: <team name> — <total>/<wickets> in <overs> overs
-Top scorers:
-- <Player>: <runs> (<balls>) [<4s> fours, <6s> sixes]
-- <Player>: <runs> (<balls>) [<4s> fours, <6s> sixes]
-Key bowlers:
-- <Player>: <wickets>/<runs> (<overs> overs)
-- <Player>: <wickets>/<runs> (<overs> overs)
-
-INNINGS NARRATIVE:
-<1 paragraph describing the chase/defense — pressure moments, key wickets>
-
-RESULT: <team name> won by <margin>
-PLAYER OF THE MATCH: <Player Name> (<brief reason>)
-
-Do not use markdown formatting."""
-
-    second_innings = chat(
-        messages=[
-            {"role": "user", "content": prompt_1},
-            {"role": "assistant", "content": first_innings},
-            {"role": "user", "content": prompt_2},
-        ],
-        system=SYSTEM_PROMPT,
-        max_tokens=800,
-        model=SIM_MODEL,
-    )
-
-    segments = [
-        {"label": "First Innings", "text": _clean_for_web(first_innings)},
-        {"label": "Second Innings & Result", "text": _clean_for_web(second_innings)},
+def _lo_segment_facts(m):
+    inn1, inn2 = m["innings"][0], m["innings"][1]
+    f1 = "\n".join([
+        f"TOSS: {m['toss']}",
+        f"{inn1['batting_team']} {inn1['total']}/{inn1['wickets']} ({inn1['overs']} overs)",
+        f"Top scorers: {_render_bat_top(inn1)}",
+        f"Key bowlers: {_render_bowl_top(inn1)}",
+    ])
+    f2 = "\n".join([
+        f"{inn2['batting_team']} {inn2['total']}/{inn2['wickets']} ({inn2['overs']} overs)",
+        f"Top scorers: {_render_bat_top(inn2)}",
+        f"Key bowlers: {_render_bowl_top(inn2)}",
+        "",
+        _match_summary_text(m),
+    ])
+    return [
+        {"label": "First Innings", "facts": f1},
+        {"label": "Second Innings & Result", "facts": f2},
     ]
 
-    result_line = ""
-    for line in second_innings.splitlines():
-        if line.strip().upper().startswith("RESULT:"):
-            result_line = line.strip()
-            break
 
-    return {"venue": venue, "match_number": match_number, "segments": segments, "result_line": result_line}
+def _test_segment_facts(m):
+    out = []
+    for c in engine.test_day_cards(m):
+        lines = []
+        if c["day"] == 1:
+            lines.append(f"TOSS: {m['toss']}")
+        lines.append("At stumps: " + "; ".join(c["stumps"]))
+        if c["top_bat"]:
+            lines.append("Top batting today: " + ", ".join(f"{n} {r}" for n, r in c["top_bat"]))
+        if c["top_bowl"]:
+            lines.append("Top bowling today: " + ", ".join(f"{n} {w} wkts" for n, w in c["top_bowl"]))
+        if c["is_last"]:
+            lines.append("")
+            lines.append(_match_summary_text(m))
+        out.append({"label": f"Day {c['day']}", "facts": "\n".join(lines)})
+    return out
+
+
+def _segment_facts(m):
+    return _test_segment_facts(m) if m["format"] == "Test" else _lo_segment_facts(m)
+
+
+def _narrate_segment(label, facts, venue, pitch_desc, game_format):
+    prompt = f"""You are a cricket commentator narrating the {label} of a {game_format} match at {venue}.
+The pitch: {pitch_desc}.
+
+These are the CONFIRMED facts of this {label} — every score, name and result is final. Do not change, contradict, or add to them:
+{facts}
+
+Write 1-2 short paragraphs of vivid, engaging commentary for this {label}. Show how the pitch and conditions shaped the play. Do NOT restate the scorecard line by line, and do NOT invent new players, numbers, or results. No markdown, no headings — return ONLY the commentary prose."""
+    try:
+        return chat(messages=[{"role": "user", "content": prompt}],
+                    system=SYSTEM_PROMPT, max_tokens=380, model=SIM_MODEL).strip()
+    except Exception:
+        return ""
+
+
+def _narrate_jobs(jobs, max_workers=6):
+    """jobs: list of (key, label, facts, venue, pitch_desc, fmt). Returns {key: text}."""
+    out = {}
+    if not jobs:
+        return out
+    with ThreadPoolExecutor(max_workers=max_workers) as ex:
+        futs = {ex.submit(_narrate_segment, j[1], j[2], j[3], j[4], j[5]): j[0] for j in jobs}
+        for fut in as_completed(futs):
+            key = futs[fut]
+            try:
+                out[key] = fut.result()
+            except Exception:
+                out[key] = ""
+    return out
+
+
+def _assemble_match(m, venue, match_number, segment_facts, narrations, key_prefix=None):
+    segs = []
+    for si, seg in enumerate(segment_facts):
+        key = (key_prefix, si) if key_prefix is not None else si
+        narrative = narrations.get(key, "")
+        text = seg["facts"] + ("\n\n" + narrative if narrative else "")
+        segs.append({"label": seg["label"], "text": _clean_for_web(text)})
+    return {
+        "venue": venue,
+        "match_number": match_number,
+        "segments": segs,
+        "result_line": m["result_text"],
+        "match_summary": _match_summary_text(m),
+    }
+
+
+def _simulate_limited_overs_web(team1, team2, team1_name, team2_name, venue, game_format, match_number=None):
+    m = engine.simulate_limited_overs(team1, team2, team1_name, team2_name, venue, game_format)
+    facts = _segment_facts(m)
+    jobs = [(si, s["label"], s["facts"], venue, m["pitch"]["desc"], game_format)
+            for si, s in enumerate(facts)]
+    narr = _narrate_jobs(jobs)
+    return _assemble_match(m, venue, match_number, facts, narr)
 
 
 def _simulate_test_web(team1, team2, team1_name, team2_name, venue, match_number=None):
-    match_label = f"Match {match_number}" if match_number else "Match"
-    teams_block = _teams_block(team1, team2, team1_name, team2_name, "Test")
-
-    messages = []
-    segments = []
-
-    prompt_day1 = f"""Simulate DAY 1 ONLY of a Test match (5 days, 2 innings per side).
-
-{match_label} at {venue}
-Conditions: Consider the typical pitch and weather conditions at this ground.
-
-{teams_block}
-
-Simulate realistically based on career statistics with natural variance. Roughly 90 overs are bowled each day.
-
-Provide Day 1 in this EXACT format:
-
-TOSS: <team> won the toss and elected to <bat/bowl>
-
-DAY 1 SUMMARY:
-<team name> — <score>/<wickets> at stumps
-
-Key performers:
-- <Player>: <runs> (<balls>) or <wickets>/<runs> (<overs> overs)
-- <Player>: <runs> (<balls>) or <wickets>/<runs> (<overs> overs)
-
-DAY 1 NARRATIVE:
-<1-2 paragraphs of engaging commentary describing the day's play>
-
-MATCH STATE: <concise state at stumps>
-
-Do NOT simulate beyond Day 1. Do not use markdown formatting."""
-
-    messages.append({"role": "user", "content": prompt_day1})
-    day1_text = chat(messages=messages, system=SYSTEM_PROMPT, max_tokens=800, model=SIM_MODEL)
-    segments.append({"label": "Day 1", "text": _clean_for_web(day1_text)})
-    messages.append({"role": "assistant", "content": day1_text})
-
-    result_line = ""
-    for day_num in range(2, 6):
-        prompt_day = f"""Continue the Test match. Simulate DAY {day_num} ONLY.
-
-Pick up exactly where the previous day ended. Roughly 90 overs are bowled each day.
-
-Provide Day {day_num} in this EXACT format:
-
-DAY {day_num} SUMMARY:
-<current batting team> — <score>/<wickets> (and any completed innings)
-
-Key performers today:
-- <Player>: <runs> (<balls>) or <wickets>/<runs> (<overs> overs)
-- <Player>: <runs> (<balls>) or <wickets>/<runs> (<overs> overs)
-
-DAY {day_num} NARRATIVE:
-<1-2 paragraphs of engaging commentary for today's play>
-
-MATCH STATE: <concise current state — all innings scores and current position>
-
-{"If the match concludes today, add:" if day_num >= 3 else ""}
-{"RESULT: <team name> won by <margin> (or match drawn)" if day_num >= 3 else ""}
-{"PLAYER OF THE MATCH: <Player Name> (<brief reason>)" if day_num >= 3 else ""}
-
-{"If the match is not yet decided, do NOT declare a result." if day_num < 5 else "The match MUST conclude today — if no outright result, declare a draw."}
-
-Do NOT simulate beyond Day {day_num}. Do not use markdown formatting."""
-
-        messages.append({"role": "user", "content": prompt_day})
-        day_text = chat(messages=messages, system=SYSTEM_PROMPT, max_tokens=800, model=SIM_MODEL)
-        segments.append({"label": f"Day {day_num}", "text": _clean_for_web(day_text)})
-        messages.append({"role": "assistant", "content": day_text})
-
-        if "RESULT:" in day_text:
-            for line in day_text.splitlines():
-                if line.strip().upper().startswith("RESULT:"):
-                    result_line = line.strip()
-                    break
-            break
-
-    return {"venue": venue, "match_number": match_number, "segments": segments, "result_line": result_line}
+    m = engine.simulate_test(team1, team2, team1_name, team2_name, venue)
+    facts = _segment_facts(m)
+    jobs = [(si, s["label"], s["facts"], venue, m["pitch"]["desc"], "Test")
+            for si, s in enumerate(facts)]
+    narr = _narrate_jobs(jobs)
+    return _assemble_match(m, venue, match_number, facts, narr)
 
 
 def simulate_series_web(team1, team2, team1_name, team2_name, venue_country, game_format, num_matches):
-    matches = []
+    # 1) Run the authoritative engine for every match (instant, in code).
+    eng_matches = []      # (match_struct, venue, match_number)
+    facts_all = []        # per-match list of {label, facts}
     for i in range(1, num_matches + 1):
         venue = pick_venue(venue_country)
         if game_format == "Test":
-            result = _simulate_test_web(team1, team2, team1_name, team2_name, venue, i if num_matches > 1 else None)
+            m = engine.simulate_test(team1, team2, team1_name, team2_name, venue)
         else:
-            result = _simulate_limited_overs_web(team1, team2, team1_name, team2_name, venue, game_format, i if num_matches > 1 else None)
-        matches.append(result)
+            m = engine.simulate_limited_overs(team1, team2, team1_name, team2_name, venue, game_format)
+        eng_matches.append((m, venue, i if num_matches > 1 else None))
+        facts_all.append(_segment_facts(m))
 
+    # 2) Narrate every segment across every match in one parallel pass —
+    #    facts are fixed by the engine, so there is no sequential dependency.
+    jobs = []
+    for mi, (m, venue, _) in enumerate(eng_matches):
+        for si, seg in enumerate(facts_all[mi]):
+            jobs.append(((mi, si), seg["label"], seg["facts"], venue, m["pitch"]["desc"], game_format))
+    narrations = _narrate_jobs(jobs)
+
+    # 3) Assemble each match.
+    matches = []
+    for mi, (m, venue, num) in enumerate(eng_matches):
+        matches.append(_assemble_match(m, venue, num, facts_all[mi], narrations, key_prefix=mi))
+
+    # 4) Series summary (Fix 2): result + Player of the Series computed in code,
+    #    LLM only writes the prose over the real aggregated standings.
     series_summary = None
     if num_matches > 1:
-        all_text = "\n\n".join(m.get("result_line", "") for m in matches if m.get("result_line"))
-        try:
-            series_summary = chat(
-                messages=[{
-                    "role": "user",
-                    "content": f"Based on these {num_matches} match results between {team1_name} and {team2_name}:\n\n{all_text}\n\nProvide a brief series summary in this format:\nSERIES RESULT: <team> won the series <X>-<Y> (or drawn)\nPLAYER OF THE SERIES: <name> (<brief reason>)\nSERIES SUMMARY: <1 paragraph summary>\n\nDo not use markdown.",
-                }],
-                max_tokens=300,
-                model=SIM_MODEL,
-            )
-            series_summary = _clean_for_web(series_summary)
-        except Exception:
-            series_summary = None
+        agg = engine.aggregate_series(team1_name, team2_name, [m for m, _, _ in eng_matches])
+        series_summary = _build_series_summary(agg, team1_name, team2_name, game_format, num_matches)
 
     return {"matches": matches, "series_summary": series_summary}
 
 
+def _build_series_summary(agg, team1_name, team2_name, game_format, num_matches):
+    winner = agg["series_winner"]
+    header = (f"SERIES RESULT: {winner} won the series {agg['score_line']}"
+              if winner else f"SERIES RESULT: Series drawn {agg['score_line']}")
+    pos = agg.get("player_of_series")
+    pos_line = ""
+    if pos:
+        bits = []
+        if pos["runs"]:
+            bits.append(f"{pos['runs']} runs")
+        if pos["wickets"]:
+            bits.append(f"{pos['wickets']} wickets")
+        pos_line = f"PLAYER OF THE SERIES: {pos['name']} ({', '.join(bits)} across {num_matches} matches)"
+
+    prompt = f"""Write a 2-3 sentence summary of a {num_matches}-match {game_format} series between {team1_name} and {team2_name}.
+Confirmed outcome — do not contradict: {header}. {pos_line}
+Match wins — {team1_name}: {agg['wins'].get(team1_name, 0)}, {team2_name}: {agg['wins'].get(team2_name, 0)}, draws: {agg['draws']}.
+No markdown, no headings. Return ONLY the prose summary."""
+    try:
+        prose = chat(messages=[{"role": "user", "content": prompt}],
+                     system=SYSTEM_PROMPT, max_tokens=220, model=SIM_MODEL).strip()
+    except Exception:
+        prose = ""
+    return _clean_for_web("\n".join(x for x in [header, pos_line, prose] if x))
+
+
 def simulate_series(team1, team2, team1_name, team2_name, venue_country, game_format, num_matches):
-    results = []
-    for i in range(1, num_matches + 1):
-        print(f"\n  Simulating match {i} of {num_matches}...")
-        result = simulate_match(
-            team1, team2, team1_name, team2_name,
-            venue_country, game_format, i
-        )
-        results.append(result)
-
-    if num_matches > 1:
-        all_results_text = "\n\n---\n\n".join(
-            [r["result_text"] for r in results]
-        )
-        series_summary = chat(
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"""Based on these {num_matches} match results between {team1_name} and {team2_name}, provide a brief series summary:
-
-{all_results_text}
-
-Format:
-SERIES RESULT: <team> won the series <X>-<Y> (or drawn <X>-<X>)
-PLAYER OF THE SERIES: <name> (<brief reason>)
-SERIES SUMMARY: <1-2 paragraph summary of the series>""",
-                }
-            ],
-            max_tokens=500,
-            model=SIM_MODEL,
-        )
-    else:
-        series_summary = None
-
-    return {"matches": results, "series_summary": series_summary}
+    """CLI entry point — uses the authoritative engine and prints each match."""
+    print(f"\n  Simulating {num_matches} match(es)...\n")
+    result = simulate_series_web(
+        team1, team2, team1_name, team2_name, venue_country, game_format, num_matches
+    )
+    for m in result["matches"]:
+        label = f"Match {m['match_number']}" if m.get("match_number") else "Match"
+        print(f"\n{'─' * 50}\n  {label} — {m['venue']}\n{'─' * 50}")
+        for seg in m["segments"]:
+            print(f"\n  [{seg['label']}]\n{seg['text']}")
+        print(f"\n  {m['match_summary']}")
+    return result
