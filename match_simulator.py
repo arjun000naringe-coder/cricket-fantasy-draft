@@ -2,7 +2,7 @@ import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from llm_client import chat, HEAVY_MODEL
-import cricket_engine as engine
+import cricket_engine_v2 as engine  # rehashed engine: regression, over-budget, coupling
 
 SIM_MODEL = "gemma4:31b"
 
