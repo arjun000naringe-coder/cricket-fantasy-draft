@@ -358,10 +358,10 @@ The pitch: {pitch_desc}.
 These are the CONFIRMED facts of this {label} — every score, name and result is final. Do not change, contradict, or add to them:
 {facts}
 
-Write 1-2 short paragraphs of vivid, engaging commentary for this {label}. Show how the pitch and conditions shaped the play. Do NOT restate the scorecard line by line, and do NOT invent new players, numbers, or results. No markdown, no headings — return ONLY the commentary prose."""
+Write ONE sentence of vivid commentary for this {label}. Focus on the key turning point or mood of the day. Do NOT restate scores or stats — those are shown separately. No markdown, no headings — return ONLY the single sentence."""
     try:
         return chat(messages=[{"role": "user", "content": prompt}],
-                    system=SYSTEM_PROMPT, max_tokens=380, model=SIM_MODEL).strip()
+                    system=SYSTEM_PROMPT, max_tokens=80, model=SIM_MODEL).strip()
     except Exception:
         return ""
 
@@ -382,19 +382,134 @@ def _narrate_jobs(jobs, max_workers=6):
     return out
 
 
+def _serialize_innings(innings_list):
+    out = []
+    for inn in innings_list:
+        out.append({
+            "batting_team": inn["batting_team"],
+            "bowling_team": inn["bowling_team"],
+            "total": inn["total"],
+            "wickets": inn["wickets"],
+            "overs": inn["overs"],
+            "batting": [{"name": b["name"], "runs": b["runs"], "balls": b["balls"], "out": b["out"]}
+                        for b in inn["batting"][:5]],
+            "bowling": [{"name": b["name"], "wickets": b["wickets"], "runs": b["runs"], "overs": b["overs"]}
+                        for b in inn["bowling"][:4]],
+        })
+    return out
+
+
+def _build_day_snapshots(m):
+    """Build per-day scorecard snapshots + situation text for Test matches."""
+    day_cards = engine.test_day_cards(m)
+    innings = m["innings"]
+    shown_innings = set()
+    snapshots = []
+    for c in day_cards:
+        stumps = c["stumps"]
+
+        show_tables = []
+        for idx in c.get("completed", []):
+            if idx not in shown_innings:
+                shown_innings.add(idx)
+                show_tables.append(idx)
+        if c["is_last"]:
+            for idx in c.get("in_play", []):
+                if idx not in shown_innings:
+                    shown_innings.add(idx)
+                    show_tables.append(idx)
+
+        situation = _compute_situation(stumps, innings, c["is_last"], m)
+        snapshots.append({
+            "stumps": stumps,
+            "show_innings": sorted(show_tables),
+            "situation": situation,
+        })
+    return snapshots
+
+
+def _compute_situation(stumps, innings, is_last, m):
+    """Derive a human-readable match situation from stumps scores."""
+    import re
+
+    def parse_score(s):
+        pat = re.match(r"(.+?)\s+(\d+)/(\d+)", s)
+        if pat:
+            return pat.group(1).strip(), int(pat.group(2)), int(pat.group(3)), False
+        pat = re.match(r"(.+?)\s+(\d+)\s+all out", s)
+        if pat:
+            return pat.group(1).strip(), int(pat.group(2)), 10, True
+        pat = re.match(r"(.+?)\s+(\d+)/(\d+)\s+\(declared\)", s)
+        if pat:
+            return pat.group(1).strip(), int(pat.group(2)), int(pat.group(3)), True
+        return None, 0, 0, False
+
+    if is_last and m.get("winner"):
+        return ""
+
+    scores = [parse_score(s) for s in stumps]
+    scores = [s for s in scores if s[0] is not None]
+
+    if len(scores) == 1:
+        return f"{scores[0][0]} {scores[0][1]}/{scores[0][2]} at stumps"
+
+    if len(scores) == 2:
+        t1, r1 = scores[0][0], scores[0][1]
+        t2, r2, w2 = scores[1][0], scores[1][1], scores[1][2]
+        diff = r1 - r2
+        if diff > 0:
+            return f"{t2} trails by {diff} runs with {10 - w2} wickets remaining"
+        elif diff < 0:
+            return f"{t2} leads by {-diff} runs with {10 - w2} wickets remaining"
+        else:
+            return f"Scores level — {t2} {10 - w2} wickets in hand"
+
+    if len(scores) == 3:
+        t1_r, t2_r = scores[0][1], scores[1][1]
+        t3, r3, w3 = scores[2][0], scores[2][1], scores[2][2]
+        lead = t1_r - t2_r + r3
+        return f"{t3} leads by {lead} runs with {10 - w3} wickets remaining"
+
+    if len(scores) == 4:
+        t1_r, t2_r = scores[0][1], scores[1][1]
+        t3_r = scores[2][1]
+        t4, r4, w4 = scores[3][0], scores[3][1], scores[3][2]
+        target = t1_r - t2_r + t3_r + 1
+        needed = target - r4
+        if needed > 0:
+            return f"{t4} needs {needed} more runs to win with {10 - w4} wickets remaining"
+        else:
+            return ""
+
+    return ""
+
+
 def _assemble_match(m, venue, match_number, segment_facts, narrations, key_prefix=None):
+    is_test = m.get("format") == "Test"
+    day_snapshots = _build_day_snapshots(m) if is_test else []
+
     segs = []
     for si, seg in enumerate(segment_facts):
         key = (key_prefix, si) if key_prefix is not None else si
         narrative = narrations.get(key, "")
-        text = seg["facts"] + ("\n\n" + narrative if narrative else "")
-        segs.append({"label": seg["label"], "text": _clean_for_web(text)})
+        seg_data = {"label": seg["label"], "narrative": _clean_for_web(narrative) if narrative else ""}
+        if is_test and si < len(day_snapshots):
+            seg_data["snapshot"] = day_snapshots[si]
+        segs.append(seg_data)
+    potm = m.get("potm")
     return {
         "venue": venue,
         "match_number": match_number,
         "segments": segs,
         "result_line": m["result_text"],
         "match_summary": _match_summary_text(m),
+        "toss": m.get("toss", ""),
+        "pitch_desc": m.get("pitch", {}).get("desc", ""),
+        "innings": _serialize_innings(m.get("innings", [])),
+        "winner": m.get("winner"),
+        "margin": m.get("margin", ""),
+        "potm": {"name": potm["name"], "reason": potm["reason"]} if potm else None,
+        "format": m.get("format", ""),
     }
 
 

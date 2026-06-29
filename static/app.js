@@ -29,6 +29,11 @@ function scrollToBottom() {
     requestAnimationFrame(() => { chat.scrollTop = chat.scrollHeight; });
 }
 
+function scrollToElement(el) {
+    const chat = document.getElementById("chat");
+    requestAnimationFrame(() => { el.scrollIntoView({ behavior: "smooth", block: "start" }); });
+}
+
 function typeText(div, html, speed) {
     return new Promise(resolve => {
         let chars = [];
@@ -125,12 +130,18 @@ function statsMsg(html) {
     messagesEl.appendChild(div);
     scrollToBottom();
 }
-function commentaryMsg(text) { return queueTyped(text, "msg-commentary", 10); }
+function commentaryMsg(text) {
+    const div = document.createElement("div");
+    div.className = "msg-commentary";
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+}
 
 // --- Setup flow ---
 
 function startSetup() {
-    const div = botMsg("CRICKET FANTASY DRAFT v1.0\n\nBuild your dream XI under a constraint — every pick counts.\n\nHow many players?");
+    const div = botMsg("Cricket Fantasy Draft v1.0\n\nBuild your dream XI under a constraint — every pick counts.\n\nHow many players?");
     const opts = document.createElement("div");
     opts.className = "setup-options";
     [1, 2, 3, 4].forEach(n => {
@@ -146,7 +157,7 @@ function startSetup() {
 function disableAllButtons() {
     document.querySelectorAll(".setup-options button, .confirm-buttons button, .candidate-btn").forEach(b => {
         b.disabled = true;
-        b.style.opacity = "0.5";
+        b.style.opacity = "0.4";
         b.style.cursor = "default";
     });
 }
@@ -316,18 +327,13 @@ async function startDraft(c) {
 async function handlePickSuccess(data) {
     pickCount = data.pick_number;
     currentTurnPlayer = data.current_turn || "";
-    const pickedFor = data.picked_for || "";
     const p = data.player;
 
-    let prefix = numPlayers > 1 ? `[${pickedFor}] ` : "";
-    await botMsgTyped(`${prefix}✅ <b>${p.name}</b> — ${p.country} · ${p.role}` +
-        (p.bat_hand !== "?" ? ` · ${p.bat_hand}-hand bat` : "") +
-        (p.bowl_style && p.bowl_style !== "N/A" ? ` · ${p.bowl_style}` : ""));
-    if (data.stats) await statsMsg(data.stats);
-    if (data.commentary) await commentaryMsg(data.commentary);
+    if (data.stats) statsMsg(data.stats);
+    if (data.commentary) commentaryMsg(data.commentary);
 
     if (data.draft_complete) {
-        await botMsgTyped("🏆 <b>Draft complete!</b>");
+        await botMsgTyped("Draft complete!");
         state = "complete";
         showPostDraftOptions();
     } else {
@@ -361,7 +367,7 @@ async function handleDraftInput(text) {
         });
         const data = await resp.json();
         hideTyping();
-        await botMsgTyped(`💡 ${data.hint}`);
+        await botMsgTyped(data.hint);
         setInputEnabled(true);
         return;
     }
@@ -415,7 +421,7 @@ async function handleDraftInput(text) {
         };
 
         const noBtn = document.createElement("button");
-        noBtn.textContent = "No — search online";
+        noBtn.textContent = "No, search ESPN";
         noBtn.onclick = async () => {
             disableAllButtons();
             userMsg("No");
@@ -474,7 +480,7 @@ async function handleDraftInput(text) {
         data.candidates.forEach(c => {
             const btn = document.createElement("button");
             btn.className = "candidate-btn";
-            btn.textContent = `${c.name} (${c.country}, ${c.role})`;
+            btn.innerHTML = `<span class="cand-name">${c.name}</span> <span class="cand-info">— ${c.country}, ${c.role}</span>`;
             btn.onclick = () => {
                 disableAllButtons();
                 userMsg(c.name);
@@ -528,7 +534,7 @@ async function handleDraftInput(text) {
                 btns2.appendChild(noBtn2);
                 div2.appendChild(btns2);
             } else {
-                await botMsgTyped(`❌ ${data2.message || "Could not find this player."}`);
+                await botMsgTyped(data2.message || "Could not find this player.");
                 setInputEnabled(true);
             }
         };
@@ -537,7 +543,11 @@ async function handleDraftInput(text) {
         div.appendChild(list);
 
     } else if (data.status === "rejected") {
-        await botMsgTyped(`❌ ${data.message}`);
+        const rejDiv = document.createElement("div");
+        rejDiv.className = "msg-rejected";
+        rejDiv.innerHTML = `<span class="badge badge-rejected">REJECTED</span> ${data.message}`;
+        messagesEl.appendChild(rejDiv);
+        scrollToBottom();
         setInputEnabled(true);
     }
 }
@@ -558,7 +568,11 @@ async function confirmPick(originalText, confirmedName) {
     if (data.status === "picked") {
         await handlePickSuccess(data);
     } else {
-        await botMsgTyped(`❌ ${data.message}`);
+        const rejDiv = document.createElement("div");
+        rejDiv.className = "msg-rejected";
+        rejDiv.innerHTML = `<span class="badge badge-rejected">REJECTED</span> ${data.message}`;
+        messagesEl.appendChild(rejDiv);
+        scrollToBottom();
         setInputEnabled(true);
     }
 }
@@ -716,8 +730,61 @@ function selectVenue(country) {
     simulateMatch();
 }
 
+function renderBattingTable(inn, label) {
+    const top = inn.batting.filter(b => b.runs > 0 || !b.out).slice(0, 4);
+    if (!top.length) return "";
+    let rows = top.map(b => {
+        const notOut = !b.out ? "*" : "";
+        return `<tr><td>${b.name}</td><td class="highlight">${b.runs}${notOut}</td><td>${b.balls}</td><td>${b.balls > 0 ? Math.round(b.runs / b.balls * 100) : 0}</td></tr>`;
+    }).join("");
+    return `<div class="sim-stats-card"><div class="card-header"><span class="card-label">${label} — ${inn.batting_team}</span><span class="card-score">${inn.total}/${inn.wickets}</span></div><table><tr><th>Player</th><th>R</th><th>B</th><th>SR</th></tr>${rows}</table></div>`;
+}
+
+function renderBowlingTable(inn, label) {
+    const top = inn.bowling.filter(b => b.wickets > 0).slice(0, 3);
+    if (!top.length) return "";
+    let rows = top.map(b => {
+        return `<tr><td>${b.name}</td><td class="highlight">${b.wickets}</td><td>${b.runs}</td><td>${b.overs}</td></tr>`;
+    }).join("");
+    return `<div class="sim-stats-card"><div class="card-header"><span class="card-label">${label} — ${inn.bowling_team}</span></div><table><tr><th>Player</th><th>W</th><th>R</th><th>Ov</th></tr>${rows}</table></div>`;
+}
+
+function renderMatchResult(match) {
+    const r = match.winner
+        ? `${match.winner} won by ${match.margin}`
+        : match.result_line;
+    let potmHtml = "";
+    if (match.potm) {
+        potmHtml = `<div class="potm"><div class="potm-label">Player of the match</div><div class="potm-name">${match.potm.name} — ${match.potm.reason}</div></div>`;
+    }
+    return `<div class="match-result"><div class="result-label">Result</div><div class="result-text">${r}</div>${potmHtml}</div>`;
+}
+
+function renderMatchSituation(innings, matchFormat) {
+    if (innings.length < 2) return "";
+    const inn1 = innings[0];
+    const inn2 = innings[1];
+
+    if (matchFormat === "Test") {
+        if (innings.length >= 4) {
+            const inn4 = innings[3];
+            const target = innings[2] ? inn1.total - innings[2].total + innings[2].total + 1 : inn1.total + 1;
+            return "";
+        }
+        return "";
+    }
+
+    const target = inn1.total + 1;
+    const remaining = target - inn2.total;
+    const wicketsLeft = 10 - inn2.wickets;
+    if (remaining > 0 && wicketsLeft > 0) {
+        return `<div class="match-situation"><div class="situation-label">Match situation</div><div class="situation-text">${inn2.batting_team} needed <span class="num">${remaining} runs</span> from <span class="num">${wicketsLeft} wickets</span></div></div>`;
+    }
+    return "";
+}
+
 async function simulateMatch() {
-    botMsg(`Simulating ${simNumMatches > 1 ? simNumMatches + "-match series" : "match"} in ${simVenueCountry}...\n\n<span class="pick-counter">This may take a minute${simNumMatches > 1 ? " or two" : ""}${gameFormat === "Test" ? " — Test matches are simulated day by day" : ""}.</span>`);
+    const loadMsg = botMsg(`Simulating ${simNumMatches > 1 ? simNumMatches + "-match series" : "match"} in ${simVenueCountry}...\n\n<span class="pick-counter">This may take a minute${simNumMatches > 1 ? " or two" : ""}${gameFormat === "Test" ? " — Test matches are simulated day by day" : ""}.</span>`);
     showTyping();
     setInputEnabled(false);
 
@@ -731,10 +798,12 @@ async function simulateMatch() {
     state = "complete";
 
     if (data.error) {
-        botMsg(`❌ ${data.error}`);
+        botMsg(data.error);
         setInputEnabled(true);
         return;
     }
+
+    let firstMatchEl = null;
 
     for (const series of data.results) {
         const teamA = series.team_a;
@@ -745,24 +814,115 @@ async function simulateMatch() {
             const matchTitle = match.match_number ? `Match ${match.match_number}` : "Match";
             const venueStr = match.venue || "";
 
-            addMsg(`\n⚔️ <b>${teamA}'s XI vs ${teamB}'s XI — ${matchTitle}</b>\n📍 ${venueStr}`, "msg-bot");
-
-            for (const seg of match.segments) {
-                const segDiv = document.createElement("div");
-                segDiv.className = "msg msg-sim-segment";
-                segDiv.innerHTML = `<div class="sim-segment-label">${seg.label}</div><div class="sim-segment-body">${seg.text}</div>`;
-                messagesEl.appendChild(segDiv);
+            // Match header with pitch conditions
+            const headerDiv = document.createElement("div");
+            headerDiv.className = "match-header";
+            let pitchHtml = "";
+            if (match.pitch_desc) {
+                const desc = match.pitch_desc;
+                const highlighted = desc.replace(/(spinners?|pacers?|seamers?|swing|bounce|turn|fast bowlers?)/gi, '<span class="pitch-highlight">$1</span>');
+                pitchHtml = `<div class="pitch-info"><span class="badge badge-pitch">PITCH</span> <span>${highlighted}</span></div>`;
             }
-            scrollToBottom();
+            headerDiv.innerHTML = `<div class="match-header-title"><span class="match-name">${teamA}'s XI vs ${teamB}'s XI — ${matchTitle}</span><span class="match-format">${match.format || gameFormat}</span></div><div class="match-venue">${venueStr}</div>${pitchHtml}`;
+            messagesEl.appendChild(headerDiv);
+
+            if (!firstMatchEl) firstMatchEl = headerDiv;
+
+            // Toss
+            if (match.toss) {
+                addMsg(match.toss, "msg-bot");
+            }
+
+            // Render innings as structured tables with narratives
+            const innings = match.innings || [];
+            const segments = match.segments || [];
+
+            if (match.format === "Test" || (match.format || gameFormat) === "Test") {
+                // Test: render day-by-day with scorecard tables + situation
+                for (let si = 0; si < segments.length; si++) {
+                    const seg = segments[si];
+                    const segDiv = document.createElement("div");
+                    segDiv.className = "msg-sim-segment";
+
+                    let segHtml = `<div class="sim-segment-label">${seg.label}</div>`;
+                    if (seg.narrative) {
+                        segHtml += `<div class="sim-narrative">${seg.narrative}</div>`;
+                    }
+                    segDiv.innerHTML = segHtml;
+                    messagesEl.appendChild(segDiv);
+
+                    if (seg.snapshot) {
+                        const snap = seg.snapshot;
+
+                        // Stumps score line
+                        const stumpsDiv = document.createElement("div");
+                        stumpsDiv.className = "day-snapshot";
+                        let stumpsHtml = '<div class="stumps-scores">';
+                        snap.stumps.forEach(s => {
+                            stumpsHtml += `<div class="stumps-line">${s}</div>`;
+                        });
+                        stumpsHtml += '</div>';
+                        if (snap.situation) {
+                            stumpsHtml += `<div class="day-situation">${snap.situation}</div>`;
+                        }
+                        stumpsDiv.innerHTML = stumpsHtml;
+                        messagesEl.appendChild(stumpsDiv);
+
+                        // Full scorecard tables for innings completed this day
+                        if (snap.show_innings && snap.show_innings.length > 0) {
+                            for (const ii of snap.show_innings) {
+                                if (ii < innings.length) {
+                                    const inn = innings[ii];
+                                    const tableDiv = document.createElement("div");
+                                    tableDiv.innerHTML = renderBattingTable(inn, `Innings ${ii + 1}`) + renderBowlingTable(inn, `Bowling`);
+                                    messagesEl.appendChild(tableDiv);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Limited overs: render each innings with tables
+                for (let ii = 0; ii < innings.length; ii++) {
+                    const inn = innings[ii];
+                    const seg = segments[ii] || {};
+                    const label = ii === 0 ? "First innings" : "Second innings";
+
+                    const segDiv = document.createElement("div");
+                    segDiv.className = "msg-sim-segment";
+                    segDiv.innerHTML = `<div class="sim-segment-label">${label}</div>`;
+                    messagesEl.appendChild(segDiv);
+
+                    const tableDiv = document.createElement("div");
+                    tableDiv.innerHTML = renderBattingTable(inn, "Batting") + renderBowlingTable(inn, "Bowling");
+                    messagesEl.appendChild(tableDiv);
+
+                    if (seg.narrative) {
+                        const narDiv = document.createElement("div");
+                        narDiv.className = "sim-narrative";
+                        narDiv.textContent = seg.narrative;
+                        messagesEl.appendChild(narDiv);
+                    }
+                }
+            }
+
+            // Result
+            const resultDiv = document.createElement("div");
+            resultDiv.innerHTML = renderMatchResult(match);
+            messagesEl.appendChild(resultDiv);
         }
 
         if (series.series_summary) {
             const sumDiv = document.createElement("div");
             sumDiv.className = "msg msg-sim-summary";
-            sumDiv.innerHTML = `🏆 ${series.series_summary}`;
+            sumDiv.innerHTML = series.series_summary;
             messagesEl.appendChild(sumDiv);
-            scrollToBottom();
         }
+    }
+
+    // Scroll to start of simulation, not bottom
+    if (firstMatchEl) {
+        scrollToElement(firstMatchEl);
     }
 
     showPostSimOptions();

@@ -582,9 +582,13 @@ def test_day_cards(match):
                     share = bo["wickets"] * window_w / tot_w
                     if share >= 0.5:
                         bowl_today[bo["name"]] = bowl_today.get(bo["name"], 0) + int(round(share))
+        completed = [idx for idx in in_play
+                     if starts[idx] + innings[idx]["overs"] <= day_end + 0.01]
         cards.append({
             "day": d,
             "stumps": states,
+            "in_play": in_play,
+            "completed": completed,
             "top_bat": sorted(bat_today.items(), key=lambda x: -x[1])[:2],
             "top_bowl": sorted(bowl_today.items(), key=lambda x: -x[1])[:2],
             "is_last": day_end >= match_end - 0.01,

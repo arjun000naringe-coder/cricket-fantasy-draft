@@ -17,29 +17,54 @@ def _format_stats_card(player, game_format):
         return None
 
     role = player.get("role", "Unknown")
-    items = []
+    bat_hand = player.get("bat_hand", "?")
+    bowl_style = player.get("bowl_style", "N/A")
+    role_line = role
+    if bat_hand != "?":
+        role_line += f" · {bat_hand}-hand bat"
+    if bowl_style and bowl_style != "N/A":
+        role_line += f" · {bowl_style}"
 
+    items = []
     if role in ("Batsman", "Wicket-keeper", "All-rounder"):
-        items.append(f"Mat: {fmt.get('matches', '?')}")
-        items.append(f"Runs: {fmt.get('runs', '?')}")
-        items.append(f"Avg: {fmt.get('bat_avg', '?')}")
-        items.append(f"HS: {fmt.get('highest_score', '?')}")
-        items.append(f"100s: {fmt.get('hundreds', '?')}")
-        items.append(f"50s: {fmt.get('fifties', '?')}")
+        items.append(("Mat", fmt.get("matches", "?"), False))
+        items.append(("Runs", fmt.get("runs", "?"), False))
+        items.append(("Avg", fmt.get("bat_avg", "?"), False))
+        items.append(("HS", fmt.get("highest_score", "?"), False))
+        items.append(("100s", fmt.get("hundreds", "?"), True))
+        items.append(("50s", fmt.get("fifties", "?"), False))
 
     if role in ("Bowler", "All-rounder"):
-        items.append(f"Wkts: {fmt.get('wickets', '?')}")
-        items.append(f"BowlAvg: {fmt.get('bowl_avg', '?')}")
-        items.append(f"Best: {fmt.get('best_bowling', '?')}")
-        items.append(f"5W: {fmt.get('five_wickets', '?')}")
+        items.append(("Wkts", fmt.get("wickets", "?"), False))
+        items.append(("BowlAvg", fmt.get("bowl_avg", "?"), False))
+        items.append(("Best", fmt.get("best_bowling", "?"), False))
+        items.append(("5W", fmt.get("five_wickets", "?"), False))
 
-    if role == "Bowler" and not any("Runs" in i for i in items):
+    if role == "Bowler" and not any(l == "Runs" for l, _, _ in items):
         if fmt.get("runs", 0):
-            items.append(f"Runs: {fmt.get('runs', '?')}")
-            items.append(f"Avg: {fmt.get('bat_avg', '?')}")
+            items.append(("Runs", fmt.get("runs", "?"), False))
+            items.append(("Avg", fmt.get("bat_avg", "?"), False))
 
-    stat_spans = "".join(f'<span class="stat-item">{item}</span>' for item in items)
-    return f'<div class="stats-grid">{stat_spans}</div>'
+    stat_spans = ""
+    for label, val, hl in items:
+        vcls = "stat-highlight" if hl else "stat-value"
+        stat_spans += f'<span class="stat-item"><span class="stat-label">{label}</span> <span class="{vcls}">{val}</span></span>'
+
+    name = player.get("name", "Unknown")
+    country = player.get("country", "?")
+
+    return (
+        f'<div class="player-card">'
+        f'<div class="player-card-header">'
+        f'<span><span class="player-name-main">{name}</span> <span class="player-country">— {country}</span></span>'
+        f'<span class="badge badge-added">ADDED</span>'
+        f'</div>'
+        f'<div class="player-card-body">'
+        f'<div class="player-card-role">{role_line}</div>'
+        f'<div class="stats-grid">{stat_spans}</div>'
+        f'</div>'
+        f'</div>'
+    )
 
 
 def _extract_commentary(text):
