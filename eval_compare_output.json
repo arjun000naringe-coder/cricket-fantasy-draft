@@ -1,0 +1,252 @@
+{
+  "current": {
+    "matches": [
+      {
+        "venue": "Wankhede Stadium, Mumbai",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.2586466165413534,
+        "top_wkt_share": 0.35294117647058826,
+        "nonfront_wkt_frac": 0.4594594594594595
+      },
+      {
+        "venue": "Eden Gardens, Kolkata",
+        "winner": null,
+        "top_scorer_share": 0.384,
+        "top_wkt_share": 0.3,
+        "nonfront_wkt_frac": 0.34285714285714286
+      },
+      {
+        "venue": "Melbourne Cricket Ground",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.3037974683544304,
+        "top_wkt_share": 0.4444444444444444,
+        "nonfront_wkt_frac": 0.2631578947368421
+      },
+      {
+        "venue": "Sydney Cricket Ground",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.295,
+        "top_wkt_share": 0.35,
+        "nonfront_wkt_frac": 0.1891891891891892
+      },
+      {
+        "venue": "Lord's, London",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.24669603524229075,
+        "top_wkt_share": 0.5,
+        "nonfront_wkt_frac": 0.21875
+      },
+      {
+        "venue": "Newlands, Cape Town",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.2896890343698854,
+        "top_wkt_share": 0.35,
+        "nonfront_wkt_frac": 0.275
+      },
+      {
+        "venue": "Galle International Stadium",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.4149908592321755,
+        "top_wkt_share": 0.35,
+        "nonfront_wkt_frac": 0.35135135135135137
+      },
+      {
+        "venue": "WACA Ground, Perth",
+        "winner": "India Limited XI",
+        "top_scorer_share": 0.3261261261261261,
+        "top_wkt_share": 0.4,
+        "nonfront_wkt_frac": 0.08571428571428572
+      },
+      {
+        "venue": "Dubai International Cricket Stadium",
+        "winner": "India Limited XI",
+        "top_scorer_share": 0.2085889570552147,
+        "top_wkt_share": 0.35,
+        "nonfront_wkt_frac": 0.2
+      },
+      {
+        "venue": "Basin Reserve, Wellington",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.2476894639556377,
+        "top_wkt_share": 0.3125,
+        "nonfront_wkt_frac": 0.2222222222222222
+      }
+    ],
+    "win_rate": 0.7,
+    "wins": {
+      "India Test XI": 7,
+      "India Limited XI": 2
+    },
+    "draws": 1,
+    "wkt_over_corr": 0.034523063448347636,
+    "bat_runs": {
+      "Ishan Kishan": 1058,
+      "Rohit Sharma": 628,
+      "MS Dhoni": 558,
+      "Kannaur Lokesh Rahul": 672,
+      "Axar Patel": 510,
+      "Yuvraj Singh": 629,
+      "Hardik Pandya": 585,
+      "Suresh Raina": 318,
+      "Bhuvneshwar Kumar": 450,
+      "Shardul Thakur": 422,
+      "Sachin Tendulkar": 689,
+      "Rahul Dravid": 1086,
+      "Sunil Gavaskar": 778,
+      "Virender Sehwag": 626,
+      "Virat Kohli": 608,
+      "VVS Laxman": 719,
+      "Rishabh Pant": 512,
+      "Kapil Dev": 662,
+      "Ravichandran Ashwin": 251,
+      "Anil Kumble": 227
+    },
+    "bat_outs": {
+      "Ishan Kishan": 20,
+      "Rohit Sharma": 20,
+      "MS Dhoni": 20,
+      "Kannaur Lokesh Rahul": 20,
+      "Axar Patel": 20,
+      "Yuvraj Singh": 18,
+      "Hardik Pandya": 18,
+      "Suresh Raina": 18,
+      "Bhuvneshwar Kumar": 18,
+      "Shardul Thakur": 18,
+      "Sachin Tendulkar": 20,
+      "Rahul Dravid": 20,
+      "Sunil Gavaskar": 19,
+      "Virender Sehwag": 19,
+      "Virat Kohli": 19,
+      "VVS Laxman": 19,
+      "Rishabh Pant": 18,
+      "Kapil Dev": 15,
+      "Ravichandran Ashwin": 14,
+      "Anil Kumble": 14
+    }
+  },
+  "fixed": {
+    "matches": [
+      {
+        "venue": "Wankhede Stadium, Mumbai",
+        "winner": "India Limited XI",
+        "top_scorer_share": 0.3151862464183381,
+        "top_wkt_share": 0.4,
+        "nonfront_wkt_frac": 0.0
+      },
+      {
+        "venue": "Eden Gardens, Kolkata",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.2186335403726708,
+        "top_wkt_share": 0.4,
+        "nonfront_wkt_frac": 0.025
+      },
+      {
+        "venue": "Melbourne Cricket Ground",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.3559670781893004,
+        "top_wkt_share": 0.5,
+        "nonfront_wkt_frac": 0.03333333333333333
+      },
+      {
+        "venue": "Sydney Cricket Ground",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.3591549295774648,
+        "top_wkt_share": 0.35,
+        "nonfront_wkt_frac": 0.025
+      },
+      {
+        "venue": "Lord's, London",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.42326332794830374,
+        "top_wkt_share": 0.4,
+        "nonfront_wkt_frac": 0.025
+      },
+      {
+        "venue": "Newlands, Cape Town",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.3157894736842105,
+        "top_wkt_share": 0.4,
+        "nonfront_wkt_frac": 0.0
+      },
+      {
+        "venue": "Galle International Stadium",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.44104134762633995,
+        "top_wkt_share": 0.6153846153846154,
+        "nonfront_wkt_frac": 0.09090909090909091
+      },
+      {
+        "venue": "WACA Ground, Perth",
+        "winner": "India Limited XI",
+        "top_scorer_share": 0.29635258358662614,
+        "top_wkt_share": 0.4375,
+        "nonfront_wkt_frac": 0.0
+      },
+      {
+        "venue": "Dubai International Cricket Stadium",
+        "winner": null,
+        "top_scorer_share": 0.328881469115192,
+        "top_wkt_share": 0.35714285714285715,
+        "nonfront_wkt_frac": 0.029411764705882353
+      },
+      {
+        "venue": "Basin Reserve, Wellington",
+        "winner": "India Test XI",
+        "top_scorer_share": 0.28711484593837533,
+        "top_wkt_share": 0.35714285714285715,
+        "nonfront_wkt_frac": 0.029411764705882353
+      }
+    ],
+    "win_rate": 0.7,
+    "wins": {
+      "India Limited XI": 2,
+      "India Test XI": 7
+    },
+    "draws": 1,
+    "wkt_over_corr": 0.4447468829521668,
+    "bat_runs": {
+      "Ishan Kishan": 856,
+      "Rohit Sharma": 528,
+      "MS Dhoni": 999,
+      "Suryakumar Yadav": 441,
+      "Kannaur Lokesh Rahul": 639,
+      "Axar Patel": 494,
+      "Yuvraj Singh": 506,
+      "Hardik Pandya": 539,
+      "Suresh Raina": 593,
+      "Bhuvneshwar Kumar": 280,
+      "Sachin Tendulkar": 703,
+      "Rahul Dravid": 802,
+      "Sunil Gavaskar": 746,
+      "Virender Sehwag": 1082,
+      "Virat Kohli": 1031,
+      "VVS Laxman": 454,
+      "Rishabh Pant": 379,
+      "Kapil Dev": 478,
+      "Ravichandran Ashwin": 214,
+      "Anil Kumble": 323
+    },
+    "bat_outs": {
+      "Ishan Kishan": 20,
+      "Rohit Sharma": 20,
+      "MS Dhoni": 20,
+      "Suryakumar Yadav": 20,
+      "Kannaur Lokesh Rahul": 19,
+      "Axar Patel": 19,
+      "Yuvraj Singh": 18,
+      "Hardik Pandya": 18,
+      "Suresh Raina": 18,
+      "Bhuvneshwar Kumar": 18,
+      "Sachin Tendulkar": 19,
+      "Rahul Dravid": 19,
+      "Sunil Gavaskar": 19,
+      "Virender Sehwag": 18,
+      "Virat Kohli": 17,
+      "VVS Laxman": 17,
+      "Rishabh Pant": 17,
+      "Kapil Dev": 17,
+      "Ravichandran Ashwin": 17,
+      "Anil Kumble": 17
+    }
+  }
+}

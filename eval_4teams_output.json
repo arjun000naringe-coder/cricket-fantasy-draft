@@ -1,0 +1,51 @@
+{
+  "win": {
+    "World Test XI": {
+      "Spinning XI": 8,
+      "Allrounders XI": 8,
+      "Pacers Only": 9
+    },
+    "Spinning XI": {
+      "World Test XI": 7,
+      "Allrounders XI": 6,
+      "Pacers Only": 6
+    },
+    "Allrounders XI": {
+      "World Test XI": 7,
+      "Spinning XI": 6,
+      "Pacers Only": 6
+    },
+    "Pacers Only": {
+      "World Test XI": 8,
+      "Spinning XI": 12,
+      "Allrounders XI": 12
+    }
+  },
+  "standings": {
+    "World Test XI": [
+      25,
+      13,
+      22
+    ],
+    "Spinning XI": [
+      19,
+      15,
+      26
+    ],
+    "Allrounders XI": [
+      19,
+      15,
+      26
+    ],
+    "Pacers Only": [
+      32,
+      7,
+      21
+    ]
+  },
+  "overall": [
+    0.3521106655383413,
+    0.3556268834364809,
+    0.0
+  ]
+}
